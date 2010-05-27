@@ -9,7 +9,7 @@ use OAuth::Lite2::Util qw(
     build_content
     parse_content);
 
-sub name { "name" }
+sub name { "form" }
 sub type { "application/x-www-form-urlencoded" }
 
 sub format {
