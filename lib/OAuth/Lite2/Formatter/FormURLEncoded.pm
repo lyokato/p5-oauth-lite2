@@ -15,10 +15,6 @@ sub type { "application/x-www-form-urlencoded" }
 sub format {
     my ($self, $hash) = @_;
     return build_content($hash);
-    #return join("&", sort map {sprintf(q{%s=%s},
-    #    encode_param($_),
-    #    encode_param($hash->{$_}||''),
-    #) } keys %$hash);
 }
 
 sub parse {

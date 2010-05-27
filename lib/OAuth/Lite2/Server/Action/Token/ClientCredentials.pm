@@ -1,4 +1,4 @@
-package OAuth::Lite2::Server::Action::Token::ClientCredential;
+package OAuth::Lite2::Server::Action::Token::ClientCredentials;
 
 use strict;
 use warnings;

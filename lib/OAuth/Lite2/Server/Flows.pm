@@ -7,7 +7,7 @@ use OAuth::Lite2::Server::Flow::WebServer;
 use OAuth::Lite2::Server::Flow::UserAgent;
 use OAuth::Lite2::Server::Flow::Device;
 use OAuth::Lite2::Server::Flow::UsernameAndPassword;
-use OAuth::Lite2::Server::Flow::ClientCredential;
+use OAuth::Lite2::Server::Flow::ClientCredentials;
 
 my %FLOWS;
 
@@ -20,7 +20,7 @@ __PACKAGE__->_add_flow( OAuth::Lite2::Server::Flow::WebServer->new );
 __PACKAGE__->_add_flow( OAuth::Lite2::Server::Flow::UserAgent->new );
 __PACKAGE__->_add_flow( OAuth::Lite2::Server::Flow::Device->new );
 __PACKAGE__->_add_flow( OAuth::Lite2::Server::Flow::UsernameAndPassword->new );
-__PACKAGE__->_add_flow( OAuth::Lite2::Server::Flow::ClientCredential->new );
+__PACKAGE__->_add_flow( OAuth::Lite2::Server::Flow::ClientCredentials->new );
 
 sub get_flow {
     my ($class, $flow_name) = @_;
