@@ -8,8 +8,26 @@ use parent 'Plack::Middleware';
 use Plack::Request;
 use Plack::Util::Accessor qw(realm data_handler);
 use OAuth::Lite2::Error;
+use Try::Tiny;
 
 sub call {
+    my ($self, $env) = @_;
+
+    try {
+
+        $self->validate($env);
+
+    } catch {
+
+
+    };
+
+    my $res = $self->app->($env);
+    return $res;
+}
+
+sub validate {
+
     my ($self, $env) = @_;
 
     my $req = Plack::Request->new($env);
@@ -80,8 +98,6 @@ sub call {
 
     $env->{REMOTE_USER} = $auth_info->user_id;
     # $env->{X_OAUTH_CLIENT_ID} = $auth_info->client_id;
-    my $res = $self->app->($env);
-    return $res;
 }
 
 1;

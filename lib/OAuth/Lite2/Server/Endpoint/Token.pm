@@ -11,7 +11,7 @@ use Plack::Request;
 use Try::Tiny;
 use Params::Validate;
 
-use OAuth::Lite2::Server::TokenAction::Refresh;
+use OAuth::Lite2::Server::Action::Token::Refresh;
 use OAuth::Lite2::Server::Flows;
 use OAuth::Lite2::Server::Error;
 use OAuth::Lite2::Server::Context;
@@ -29,7 +29,7 @@ sub new {
         data_handler => $args{data_handler},
     }, $class;
     $self->{flow_actions}{refresh} =
-        OAuth::Lite2::Server::TokenAction::Refresh->new;
+        OAuth::Lite2::Server::Action::Token::Refresh->new;
     return $self;
 }
 
