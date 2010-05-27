@@ -1,0 +1,6 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/OAuth-Lite2.t
+lib/OAuth/Lite2.pm

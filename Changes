@@ -1,0 +1,6 @@
+Revision history for Perl extension OAuth::Lite2.
+
+0.01  Tue Mar 23 15:25:14 2010
+	- original version; created by h2xs 1.23 with options
+		-XA OAuth::Lite2
+
