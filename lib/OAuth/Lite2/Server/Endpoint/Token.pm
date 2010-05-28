@@ -13,9 +13,9 @@ use Params::Validate;
 
 use OAuth::Lite2::Server::Action::Token::Refresh;
 use OAuth::Lite2::Server::Flows;
-use OAuth::Lite2::Server::Error;
 use OAuth::Lite2::Server::Context;
 use OAuth::Lite2::Formatters;
+use OAuth::Lite2::Error;
 
 sub new {
     my $class = shift;
