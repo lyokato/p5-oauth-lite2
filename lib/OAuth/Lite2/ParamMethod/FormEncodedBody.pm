@@ -4,6 +4,12 @@ use strict;
 use warnings;
 
 use parent 'OAuth::Lite2::ParamMethod';
+use HTTP::Request;
+use HTTP::Headers;
+use bytes ();
+use Params::Validate;
+use OAuth::Lite2::Error;
+use OAuth::Lite2::Util qw(build_content);
 
 sub match {
     my ($self, $req) = @_;
@@ -23,5 +29,50 @@ sub parse {
     return ($token, $params);
 }
 
+sub build_request {
+    my $self = shift;
+    my %args = Params::Validate::validate(@_, {
+        url          => 1,
+        method       => 1,
+        token        => 1,
+        oauth_params => 1,
+        params       => { optional => 1 },
+        content      => { optional => 1 },
+        headers      => { optional => 1 },
+    });
+    my $method = uc $args{method};
+    if ($method eq 'GET' || $method eq 'DELETE') {
+        OAuth::Lite2::Error::InvalidParamMethod->throw;
+    } else {
+
+        my $oauth_params = $args{oauth_params} || {};
+        $oauth_params->{oauth_token} = $args{token};
+
+        my $headers = $args{headers};
+        if (defined $headers) {
+            if (ref($headers) eq 'ARRAY') {
+                $headers = HTTP::Headers->new(@$headers);
+            } else {
+                $headers = $headers->clone;
+            }
+        } else {
+            $headers = HTTP::Headers->new;
+        }
+
+        unless ($headers->header("Content-Type")) {
+            $headers->header("Content-Type",
+                "application/x-www-form-urlencoded");
+        }
+        my $content_type = $headers->header("Content-Type");
+        my $params  = $args{params} || {};
+        if ($content_type ne "application/x-www-form-urlencoded") {
+            OAuth::Lite2::Error::InvalidParamMethod->throw;
+        }
+        my $content = build_content({%$params, %$oauth_params});
+        $headers->header("Content-Length", bytes::length($content));
+        my $req = HTTP::Request->new($method, $args{url}, $headers, $content);
+        return $req;
+    }
+}
 
 1;

@@ -3,12 +3,14 @@ package OAuth::Lite2::Server::Flow;
 use strict;
 use warnings;
 
+use OAuth::Lite2::Error;
+
 sub new {
     my $class = shift;
     bless {}, $class;
 }
 
-sub name { die 'abstract method' }
+sub name { OAuth::Lite2::Error::AbstractMethod->throw }
 
 sub token_endpoint_actions {
     my $self = shift;

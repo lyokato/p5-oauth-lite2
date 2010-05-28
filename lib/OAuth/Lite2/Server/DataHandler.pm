@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Params::Validate;
+use OAuth::Lite2::Error;
 
 sub new {
     my $class = shift;
@@ -18,7 +19,7 @@ sub init {
 
 sub validate_client_action {
     my ($self, $flow, $client_id, $client_name) = @_;
-    die "abstract method";
+    OAuth::Lite2::Error::AbstractMethod->throw;
     return 1;
 }
 
@@ -30,7 +31,7 @@ sub get_user {
         password => 1,
     });
 
-    die "abstract method";
+    OAuth::Lite2::Error::AbstractMethod->throw;
 }
 
 sub get_client_user {
@@ -40,17 +41,17 @@ sub get_client_user {
         client_id     => 1,
         client_secret => 1,
     });
-    die "abstract method";
+    OAuth::Lite2::Error::AbstractMethod->throw;
 }
 
 sub get_auth_info_by_code {
     my ($self, $code) = @_;
-    die "abstract method";
+    OAuth::Lite2::Error::AbstractMethod->throw;
 }
 
 sub get_auth_info_by_refresh_token {
     my ($self, $refresh_token) = @_;
-    die "abstract method";
+    OAuth::Lite2::Error::AbstractMethod->throw;
 }
 
 sub create_or_update_auth_info {
@@ -60,7 +61,7 @@ sub create_or_update_auth_info {
         user        => 1,
         scope       => 1,
     });
-    die "abstract method";
+    OAuth::Lite2::Error::AbstractMethod->throw;
 }
 
 sub create_or_update_access_token {
@@ -69,7 +70,7 @@ sub create_or_update_access_token {
         auth_id     => 1,
         secret_type => 1,
     });
-    die "abstract method";
+    OAuth::Lite2::Error::AbstractMethod->throw;
 }
 
 sub create_device_code {

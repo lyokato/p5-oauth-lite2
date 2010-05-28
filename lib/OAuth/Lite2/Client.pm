@@ -4,6 +4,10 @@ use strict;
 use warnings;
 
 use Params::Validate;
+use Try::Tiny;
+use OAuth::Lite2::ParamMethods;
+use OAuth::Lite2::Signer;
+use OAuth::Lite2::Error;
 
 sub new {
 
@@ -22,9 +26,11 @@ sub request {
         access_token_secret => { optional => 1 },
         refresh_token       => { optional => 1 },
         headers             => { optional => 1 },
+        content             => { optional => 1 },
+        params              => { optional => 1 },
     });
 
-    my $params = ($self->{secret_type})
+    my $oauth_params = ($self->{secret_type})
         ? OAuth::Lite2::Signer->sign(
             secret    => $args{access_token_secret},
             algorithm => $self->{secret_type},
@@ -33,8 +39,22 @@ sub request {
         )
         : {};
 
-    my $req = HTTP::Request->new($args{method},
-        $args{url}, $args{headers});
+    my $builder =
+        OAuth::Lite2::ParamMethods->get_request_builder($self->{param_method})
+            or OAuth::Lite2::Error::UnknownParamMethod->throw;
+
+    my %build_params = (
+        method       => $args{method},
+        url          => $args{url},
+        token        => $args{access_token},
+        oauth_params => $oauth_params,
+    );
+
+    $build_params{content} = $args{content} if $args{content};
+    $build_params{headers} = $args{headers} if $args{headers};
+    $build_params{params}  = $args{params}  if $args{params};
+
+    my $req = $builder->build_request(%build_params);
 
     my $res = $self->{agent}->request($req);
 
