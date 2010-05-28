@@ -30,7 +30,7 @@ sub request {
             algorithm => $self->{secret_type},
             method    => $args{method},
             url       => $args{url},
-        ) 
+        )
         : {};
 
     my $req = HTTP::Request->new($args{method},
@@ -40,11 +40,11 @@ sub request {
 
     return $res if $res->is_success;
 
-    if (   $self->{on_refresh} 
+    if (   $self->{on_refresh}
         && ref $self->{on_refresh} eq 'CODE'
         && $args{refresh_token} ) {
         my $refreshed = $self->refresh_access_token(
-            refresh_token => $args{refresh_token}, 
+            refresh_token => $args{refresh_token},
         );
         if ($refreshed) {
             $self->{on_refresh}->($refreshed);

@@ -1,4 +1,4 @@
-package Plack::Middleware::OAuth2::ProtectedResource;
+package Plack::Middleware::Auth::OAuth2::ProtectedResource;
 
 use strict;
 use warnings;
@@ -97,7 +97,10 @@ sub validate {
     # check $auth_info->user_id
 
     $env->{REMOTE_USER} = $auth_info->user_id;
+
     # $env->{X_OAUTH_CLIENT_ID} = $auth_info->client_id;
+    # $env->{X_OAUTH_SCOPE}     = $auth_info->scope;
+    # $dh->check_scope($req->path, $auth_info->scope);
 }
 
 1;

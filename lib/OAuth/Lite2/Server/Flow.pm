@@ -8,7 +8,7 @@ sub new {
     bless {}, $class;
 }
 
-sub name { die 'virtual method' }
+sub name { die 'abstract method' }
 
 sub token_endpoint_actions {
     my $self = shift;

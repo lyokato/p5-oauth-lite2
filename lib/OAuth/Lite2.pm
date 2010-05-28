@@ -21,6 +21,20 @@ OAuth::Lite2 - OAuth 2.0 Library
 
 =head1 SEE ALSO
 
+Client
+
+L<OAuth::Lite2::Client::WebServer>
+L<OAuth::Lite2::Client::Device>
+L<OAuth::Lite2::Client::UsernameAndPassword>
+L<OAuth::Lite2::Client::ClientCredentials>
+L<OAuth::Lite2::Client::UserAgent>
+
+Server
+
+L<OAuth::Lite2::Server::Endpoint::Token>
+L<Plack::Middleware::Auth::OAuth2::ProtectedResource>
+L<OAuth::Lite2::Server::Endpoint::EndUser>
+
 =head1 AUTHOR
 
 Lyo Kato, E<lt>lyo.kato@gmail.comE<gt>

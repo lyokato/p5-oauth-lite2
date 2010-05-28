@@ -1,4 +1,4 @@
-package OAuth::Lite2::Serve::DataHandler;
+package OAuth::Lite2::Server::DataHandler;
 
 use strict;
 use warnings;
