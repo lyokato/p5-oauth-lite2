@@ -14,6 +14,7 @@ requires(
     'String::Rondom'      => 0,
     'JSON'                => 0,
     'XML::LibXML'         => 0,
+    'Hash::MultiValue'    => 0,
     'Plack'               => 0,
 );
 

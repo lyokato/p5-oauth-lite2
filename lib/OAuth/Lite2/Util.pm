@@ -5,6 +5,8 @@ use warnings;
 
 use base 'Exporter';
 use URI::Escape;
+use Scalar::Util qw(blessed);
+use Hash::MultiValue;
 
 our %EXPORT_TAGS = ( all => [qw(
     encode_param
@@ -27,19 +29,20 @@ sub decode_param {
 
 sub parse_content {
     my $content = shift;
-    my $params  = {};
-    # TODO use Hash::MultiValue
+    my $params  = Hash::MultiValue->new;
     for my $pair (split /\&/, $content) {
         my ($key, $value) = split /\=/, $pair;
-        $key   = decode_param($key);
-        $value = decode_param($value);
-        $params->{$key} = $value;
+        $key   = decode_param($key  ||'');
+        $value = decode_param($value||'');
+        $params->add($key, $value);
     }
     return $params;
 }
 
 sub build_content {
     my $params = shift;
+    $params = $params->as_hashref_mixed
+        if blessed($params) && $params->isa('Hash::MultiValue');
     my @pairs;
     for my $key (keys %$params) {
         my $k = encode_param($key);

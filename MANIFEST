@@ -2,5 +2,6 @@ Changes
 Makefile.PL
 MANIFEST
 README
-t/OAuth-Lite2.t
 lib/OAuth/Lite2.pm
+t/00_compile.t
+t/010_core/util.t.t

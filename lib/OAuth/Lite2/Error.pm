@@ -36,6 +36,12 @@ package OAuth::Lite2::Error::Server;
 our @ISA = qw(OAuth::Lite2::Error);
 sub default_message { "error" }
 
+# not defined int the spec
+package OAuth::Lite2::Error::Server::MissingParam;
+our @ISA = qw(OAuth::Lite2::Error);
+sub default_message { "error" }
+
+# defined in the spec
 package OAuth::Lite2::Error::Server::UserDenied;
 our @ISA = qw(OAuth::Lite2::Error::Server);
 sub default_message { "user_denied" }

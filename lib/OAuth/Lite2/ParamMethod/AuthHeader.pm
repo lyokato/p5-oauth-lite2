@@ -14,7 +14,7 @@ use Hash::MultiValue;
 sub match {
     my ($self, $req) = @_;
     my $header = $req->header("Authorization");
-    return ($header && $header =~ /^Token (.*)$/);
+    return ($header && $header =~ /^\s*Token (.*)$/);
 }
 
 sub parse {
