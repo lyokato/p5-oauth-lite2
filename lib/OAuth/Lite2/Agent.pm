@@ -1,4 +1,4 @@
-package OAuth::Lite2::Client::Agent;
+package OAuth::Lite2::Agent;
 
 use strict;
 use warnings;

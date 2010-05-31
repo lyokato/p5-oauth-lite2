@@ -33,7 +33,7 @@ sub sign {
         algorithm => $args{algorithm},
     };
 
-    my $string = $class->_normalize_string(%$params,
+    my $string = $class->normalize_string(%$params,
         method => $args{method},
         host   => $uri->host,
         port   => $uri->port || 80,
@@ -44,18 +44,18 @@ sub sign {
         OAuth::Lite2::Signer::Algorithms->get_algorithm($args{algorithm})
             or OAuth::Lite2::Error::UnsupportedAlgorithm->throw($args{algorithm});
 
-    $params->{signature} = encode_base64($algorithm->hash($string, $args{secret}));
+    $params->{signature} = encode_base64($algorithm->hash($args{secret}, $string));
     return $params;
 }
 
-sub _normalize_string {
+sub normalize_string {
     my ($class, %args) = @_;
     $args{port} ||= 80;
     return join(",",
         $args{timestamp},
         $args{nonce},
         $args{algorithm},
-        lc($args{method}),
+        uc($args{method}),
         sprintf(q{%s:%d}, $args{host}, $args{port}),
         $args{url},
     );

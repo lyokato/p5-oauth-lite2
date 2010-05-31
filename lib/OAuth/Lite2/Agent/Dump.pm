@@ -1,9 +1,9 @@
-package OAuth::Lite2::Client::Agent::Dump;
+package OAuth::Lite2::Agent::Dump;
 
 use strict;
 use warnings;
 
-use base 'OAuth::Lite2::Client::Agent';
+use base 'OAuth::Lite2::Agent';
 use Data::Dump qw(dump);
 
 =head1 NAME

@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 36;
+use Test::More tests => 44;
 BEGIN {
     # core
     use_ok('OAuth::Lite2');
@@ -25,8 +25,17 @@ BEGIN {
 
     use_ok('OAuth::Lite2::Util');
 
+    use_ok('OAuth::Lite2::Agent');
+    use_ok('OAuth::Lite2::Agent::Dump');
+    use_ok('OAuth::Lite2::Agent::Strict');
+
     # client
     use_ok('OAuth::Lite2::Client');
+    use_ok('OAuth::Lite2::Client::ClientCredentials');
+    use_ok('OAuth::Lite2::Client::UserAgent');
+    use_ok('OAuth::Lite2::Client::WebServer');
+    use_ok('OAuth::Lite2::Client::Device');
+    use_ok('OAuth::Lite2::Client::UsernameAndPassword');
 
     # server
     use_ok('OAuth::Lite2::Server::Context');
