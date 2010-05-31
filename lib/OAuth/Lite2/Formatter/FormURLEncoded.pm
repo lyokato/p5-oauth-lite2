@@ -19,7 +19,7 @@ sub format {
 
 sub parse {
     my ($self, $content) = @_;
-    return parse_content($content);
+    return parse_content($content)->as_hashref_mixed;
 }
 
 1;

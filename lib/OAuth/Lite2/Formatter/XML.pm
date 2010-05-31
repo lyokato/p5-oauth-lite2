@@ -12,7 +12,7 @@ sub type { "application/xml" }
 
 sub format {
     my ($self, $hash) = @_;
-    my $xml = '<?xml version="1.0" encoding="UTF-8">';
+    my $xml = '<?xml version="1.0" encoding="UTF-8"?>';
     $xml .= '<OAuth>';
     for my $key ( keys %$hash ) {
         $xml .= sprintf(q{<%s>%s</%s>},
@@ -27,11 +27,7 @@ sub format {
 sub parse {
     my ($self, $xml) = @_;
     my $parser = XML::LibXML->new;
-    my $doc = try {
-        return $parser->parse_string($xml);
-    } catch {
-        # error
-    };
+    my $doc = $parser->parse_string($xml);
     my $root = $doc->documentElement();
     unless ($root->nodeName eq 'OAuth') {
         # error
