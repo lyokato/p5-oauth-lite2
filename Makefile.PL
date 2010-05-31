@@ -15,6 +15,9 @@ requires(
     'JSON'                => 0,
     'XML::LibXML'         => 0,
     'Hash::MultiValue'    => 0,
+    'URI::Escape'         => 0,
+    'Digest::SHA'         => 0,
+    'Scalar::Util'        => 0,
     'Plack'               => 0,
 );
 

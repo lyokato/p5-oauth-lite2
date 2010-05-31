@@ -41,10 +41,12 @@ sub sign {
     );
 
     my $algorithm =
-        OAuth::Lite2::Signer::Algorithms->get_algorithm($args{algorithm})
+        OAuth::Lite2::Signer::Algorithms->get_algorithm(lc $args{algorithm})
             or OAuth::Lite2::Error::UnsupportedAlgorithm->throw($args{algorithm});
 
-    $params->{signature} = encode_base64($algorithm->hash($args{secret}, $string));
+    my $signature = encode_base64($algorithm->hash($args{secret}, $string));
+    chomp $signature;
+    $params->{signature} = $signature;
     return $params;
 }
 
@@ -94,16 +96,21 @@ sub verify {
         algorithm => $args{algorithm},
     };
 
-    my $string = $class->_normalize_string(%$params,
+    my $string = $class->normalize_string(%$params,
         method => $args{method},
         host   => $uri->host,
         port   => $uri->port || 80,
         url    => $args{url},
     );
+
     my $algorithm =
         OAuth::Lite2::Signer::Algorithms->get_algorithm($args{algorithm})
             or OAuth::Lite2::Error::UnsupportedAlgorithm->throw($args{algorithm});
-    return ($args{signature} eq encode_base64($algorithm->hash($string, $args{secret})));
+
+    my $signature = encode_base64($algorithm->hash($args{secret}, $string));
+    chomp $signature;
+
+    return ($args{signature} eq $signature);
 }
 
 1;

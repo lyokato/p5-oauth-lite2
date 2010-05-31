@@ -30,6 +30,14 @@ package OAuth::Lite2::Error::AbstractMethod;
 our @ISA = qw(OAuth::Lite2::Error);
 sub default_message { "abstract method" }
 
+package OAuth::Lite2::Error::UnsupportedAlgorithm;
+our @ISA = qw(OAuth::Lite2::Error);
+sub default_message { "unsupported algorithm" }
+
+package OAuth::Lite2::Error::InvalidURIScheme;
+our @ISA = qw(OAuth::Lite2::Error);
+sub default_message { "invalid uri scheme" }
+
 # server errors
 
 package OAuth::Lite2::Error::Server;
