@@ -5,12 +5,32 @@ use warnings;
 
 use Params::Validate;
 use Try::Tiny;
-use OAuth::Lite2::ParamMethods;
+use LWP::UserAgent;
+
+use OAuth::Lite2;
+use OAuth::Lite2::ParamMethods qw(:all);
 use OAuth::Lite2::Signer;
 use OAuth::Lite2::Error;
 
 sub new {
+    my $class = shift;
 
+    my %args = Params::Validate::validate(@_, {
+        secret_type  => { optional => 1 },
+        param_method => { optional => 1 },
+        agent        => { optional => 1 },
+    });
+    $args{param_method} ||= AUTH_HEADER;
+
+    my $self = bless {%args}, $class;
+
+    unless ($self->{agent}) {
+        $self->{agent} = LWP::UserAgent->new;
+        $self->{agent}->agent(
+            join "/", __PACKAGE__, $OAuth::Lite2::VERSION);
+    }
+
+    return $self;
 }
 
 sub refresh_access_token {
@@ -76,40 +96,62 @@ sub get {
     my $self = shift;
     my $url  = shift;
     my %args = Params::Validate::validate(@_, {
-        
+        access_token        => 1,
+        access_token_secret => { optional => 1 },
+        refresh_token       => { optional => 1 },
+        headers             => { optional => 1 },
+        params              => { optional => 1 },
     });
     $args{method} = 'GET';
     $args{url} = $url;
+    return $self->request(%args);
 }
 
 sub post {
     my $self = shift;
     my $url  = shift;
     my %args = Params::Validate::validate(@_, {
-        
+        access_token        => 1,
+        access_token_secret => { optional => 1 },
+        refresh_token       => { optional => 1 },
+        headers             => { optional => 1 },
+        content             => { optional => 1 },
+        params              => { optional => 1 },
     });
     $args{method} = 'POST';
     $args{url} = $url;
+    return $self->request(%args);
 }
 
 sub put {
     my $self = shift;
     my $url  = shift;
     my %args = Params::Validate::validate(@_, {
-        
+        access_token        => 1,
+        access_token_secret => { optional => 1 },
+        refresh_token       => { optional => 1 },
+        headers             => { optional => 1 },
+        content             => { optional => 1 },
+        params              => { optional => 1 },
     });
     $args{method} = 'PUT';
     $args{url} = $url;
+    return $self->request(%args);
 }
 
 sub delete {
     my $self = shift;
     my $url  = shift;
     my %args = Params::Validate::validate(@_, {
-        
+        access_token        => 1,
+        access_token_secret => { optional => 1 },
+        refresh_token       => { optional => 1 },
+        headers             => { optional => 1 },
+        params              => { optional => 1 },
     });
     $args{method} = 'DELETE';
     $args{url} = $url;
+    return $self->request(%args);
 }
 
 1;

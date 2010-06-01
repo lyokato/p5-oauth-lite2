@@ -9,6 +9,7 @@ use URI;
 use LWP::UserAgent;
 use HTTP::Request;
 
+use OAuth::Lite2;
 use OAuth::Lite2::Util qw(build_content);
 use OAuth::Lite2::Error;
 use OAuth::Lite2::Formatters;
