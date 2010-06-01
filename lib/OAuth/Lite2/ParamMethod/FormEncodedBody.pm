@@ -73,7 +73,7 @@ sub build_request {
             OAuth::Lite2::Error::InvalidParamMethod->throw(
                 message =>
                      qq{When you use FormEncodedBody-type OAuth parameters,}
-                    .qq{You should use Content-Type header must be application/x-www-form-urlencoded.}
+                    .qq{Content-Type header must be application/x-www-form-urlencoded.}
             );
         }
         my $content = build_content({%$params, %$oauth_params});
