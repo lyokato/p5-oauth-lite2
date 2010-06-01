@@ -13,10 +13,9 @@ __END__
 
 OAuth::Lite2 - OAuth 2.0 Library
 
-=head1 SYNOPSIS
-
-
 =head1 DESCRIPTION
+
+OAuth 2.0 Library
 
 
 =head1 SEE ALSO

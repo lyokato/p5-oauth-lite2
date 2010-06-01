@@ -46,10 +46,10 @@ sub build_request {
             $headers = HTTP::Headers->new(@$headers);
         } else {
             $headers = $headers->clone;
-        }    
+        }
     } else {
         $headers = HTTP::Headers->new;
-    } 
+    }
 
     if ($method eq 'GET' || $method eq 'DELETE') {
         my $query = build_content({%$params, %$oauth_params});

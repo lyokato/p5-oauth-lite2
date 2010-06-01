@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Params::Validate qw(HASHREF);
+use Carp ();
 use URI;
 use LWP::UserAgent;
 use HTTP::Request;

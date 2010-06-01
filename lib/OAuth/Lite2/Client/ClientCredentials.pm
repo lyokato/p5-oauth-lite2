@@ -3,6 +3,16 @@ package OAuth::Lite2::Client::ClientCredentials;
 use strict;
 use warnings;
 
+use Params::Validate qw(HASHREF);
+use Carp ();
+use URI;
+use LWP::UserAgent;
+use HTTP::Request;
+
+use OAuth::Lite2::Util qw(build_content);
+use OAuth::Lite2::Error;
+use OAuth::Lite2::Formatters;
+
 sub new {
     my $class = shift;
 

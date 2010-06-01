@@ -4,9 +4,10 @@ use strict;
 use warnings;
 
 use parent 'OAuth::Lite2::ParamMethod';
-use OAuth::Lite2::Util qw(encode_param decode_param);
+use OAuth::Lite2::Util qw(encode_param decode_param build_content);
 use HTTP::Request;
 use HTTP::Headers;
+use URI;
 use bytes ();
 use Params::Validate;
 use Hash::MultiValue;
@@ -63,10 +64,12 @@ sub build_request {
     } else {
         $headers = HTTP::Headers->new;
     }
-    $headers->header(Authorization => sprintf(q{Token %s}, join(",", @pairs)) );
+    $headers->header(Authorization => sprintf(q{Token %s}, join(", ", @pairs)) );
 
     if ($method eq 'GET' || $method eq 'DELETE') {
-        my $req = HTTP::Request->new($method, $args{url});
+        my $url = URI->new($args{url});
+        $url->query_form(%$params);
+        my $req = HTTP::Request->new($method, $url->as_string, $headers);
         return $req;
     } else {
         unless ($headers->header("Content-Type")) {
@@ -76,7 +79,7 @@ sub build_request {
         my $content_type = $headers->header("Content-Type");
         my $content = ($content_type eq "application/x-www-form-urlencoded")
             ? build_content($params)
-            : $args{content} || build_content($params);;
+            : $args{content} || build_content($params);
         $headers->header("Content-Length", bytes::length($content));
         my $req = HTTP::Request->new($method, $args{url}, $headers, $content);
         return $req;

@@ -1,9 +1,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 29;
+use Test::More tests => 31;
 
 use OAuth::Lite2::Formatters;
+use Try::Tiny;
 
 my ($json, $xml, $form, $unknown);
 
@@ -48,6 +49,14 @@ TEST_JSON: {
     is($parsed->{refresh_token}, q{bar});
     is($parsed->{access_token_secret}, q{buz});
     is($parsed->{expires_in}, 3600);
+
+    my $message;
+    try {
+        $json->parse("invalid format");
+    } catch {
+        $message = $_->message;
+    };
+    like($message, qr/^Parse Error:/);
 };
 
 TEST_XML: {
@@ -61,6 +70,14 @@ TEST_XML: {
     is($parsed->{refresh_token}, q{bar});
     is($parsed->{access_token_secret}, q{buz});
     is($parsed->{expires_in}, 3600);
+
+    my $message;
+    try {
+        $xml->parse("invalid format");
+    } catch {
+        $message = $_->message;
+    };
+    like($message, qr/^Parse Error:/);
 };
 
 TEST_FORM: {
