@@ -89,11 +89,4 @@ sub get_access_token {
 
 }
 
-sub refresh_access_token {
-    my $self = shift;
-    my %args = Params::Validate::validate(@_, {
-        refresh_token => 1,
-    });
-}
-
 1;

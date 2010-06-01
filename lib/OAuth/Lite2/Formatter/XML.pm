@@ -3,7 +3,7 @@ package OAuth::Lite2::Formatter::XML;
 use strict;
 use warnings;
 
-use base 'OAuth::Lite2::Formatter';
+use parent 'OAuth::Lite2::Formatter';
 use Try::Tiny;
 use XML::LibXML;
 use OAuth::Lite2::Error;

@@ -3,8 +3,8 @@ package OAuth::Lite2::Server::Action::Token::Username;
 use strict;
 use warnings;
 
-use base 'OAuth::Lite2::Server::Action::Token';
-use OAuth::Lite2::Server::Error;
+use parent 'OAuth::Lite2::Server::Action::Token';
+use OAuth::Lite2::Error;
 
 sub handle_request {
     my ($self, $ctx) = @_;

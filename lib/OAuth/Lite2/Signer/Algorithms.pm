@@ -21,5 +21,4 @@ sub get_algorithm {
     return $ALGORITHMS{$name};
 }
 
-
 1;

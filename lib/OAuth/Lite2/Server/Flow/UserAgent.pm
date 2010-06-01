@@ -3,7 +3,7 @@ package OAuth::Lite2::Server::Flow::UserAgent;
 use strict;
 use warnings;
 
-use base 'OAuth::Lite2::Server::Flow';
+use parent 'OAuth::Lite2::Server::Flow';
 
 sub name { 'user_agent' }
 

@@ -3,7 +3,7 @@ package OAuth::Lite2::Server::Flow::Device;
 use strict;
 use warnings;
 
-use base 'OAuth::Lite2::Server::Flow';
+use parent 'OAuth::Lite2::Server::Flow';
 
 use OAuth::Lite2::Server::Action::Token::DeviceCode;
 use OAuth::Lite2::Server::Action::Token::DeviceToken;

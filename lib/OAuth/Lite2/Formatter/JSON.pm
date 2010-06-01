@@ -3,7 +3,7 @@ package OAuth::Lite2::Formatter::JSON;
 use strict;
 use warnings;
 
-use base 'OAuth::Lite2::Formatter';
+use parent 'OAuth::Lite2::Formatter';
 
 use JSON;
 use Try::Tiny;

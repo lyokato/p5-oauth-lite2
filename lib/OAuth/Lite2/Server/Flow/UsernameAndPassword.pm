@@ -3,7 +3,7 @@ package OAuth::Lite2::Server::Flow::UsernameAndPassword;
 use strict;
 use warnings;
 
-use base 'OAuth::Lite2::Server::Flow';
+use parent 'OAuth::Lite2::Server::Flow';
 use OAuth::Lite2::Server::Action::Token::Username;
 
 sub name { 'username' }

@@ -3,7 +3,7 @@ package OAuth::Lite2::Agent::Strict;
 use strict;
 use warnings;
 
-use base 'OAuth::Lite2::Agent';
+use parent 'OAuth::Lite2::Agent';
 use OAuth::Lite2::Error;
 
 =head1 NAME

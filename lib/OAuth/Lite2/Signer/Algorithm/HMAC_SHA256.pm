@@ -3,7 +3,7 @@ package OAuth::Lite2::Signer::Algorithm::HMAC_SHA256;
 use strict;
 use warnings;
 
-use base 'OAuth::Lite2::Signer::Algorithm';
+use parent 'OAuth::Lite2::Signer::Algorithm';
 use Digest::SHA;
 
 sub name { "hmac-sha256" }

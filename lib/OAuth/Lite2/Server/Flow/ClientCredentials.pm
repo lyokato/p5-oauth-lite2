@@ -3,7 +3,7 @@ package OAuth::Lite2::Server::Flow::ClientCredentials;
 use strict;
 use warnings;
 
-use base 'OAuth::Lite2::Server::Flow';
+use parent 'OAuth::Lite2::Server::Flow';
 use OAuth::Lite2::Server::Action::Token::ClientCredentials;
 
 sub name { 'client_credential' }

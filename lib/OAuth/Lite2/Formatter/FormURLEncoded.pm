@@ -3,7 +3,7 @@ package OAuth::Lite2::Formatter::FormURLEncoded;
 use strict;
 use warnings;
 
-use base 'OAuth::Lite2::Formatter';
+use parent 'OAuth::Lite2::Formatter';
 
 use OAuth::Lite2::Util qw(
     build_content

@@ -34,10 +34,6 @@ sub new {
     return $self;
 }
 
-sub refresh_access_token {
-
-}
-
 sub request {
     my $self = shift;
     my %args = Params::Validate::validate(@_, {

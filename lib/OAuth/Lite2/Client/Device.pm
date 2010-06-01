@@ -115,13 +115,9 @@ sub get_access_token {
 
     my $formatter =
         OAuth::Lite2::Formatters->get_formatter_by_type($res->content_type);
+
     my $result = $formatter->parse($res->content);
 
-}
-
-sub refresh_access_token {
-    my $self = shift;
-    my %args = Params::Validate::validate(@_, {});
 }
 
 1;

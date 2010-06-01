@@ -54,3 +54,4 @@ $signed_params = OAuth::Lite2::Signer->sign({
 like($signed_params->{nonce},     qr/^[a-zA-Z0-9]+$/);
 like($signed_params->{timestamp}, qr/^\d+$/);
 is($signed_params->{algorithm}, q{hmac-sha256});
+

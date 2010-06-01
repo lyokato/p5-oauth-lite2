@@ -15,6 +15,7 @@ sub new {
 
 sub init {
     my $self = shift;
+    # template method
 }
 
 sub validate_client_action {
