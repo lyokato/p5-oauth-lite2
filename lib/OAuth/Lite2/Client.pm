@@ -13,6 +13,7 @@ use OAuth::Lite2::Signer;
 use OAuth::Lite2::Error;
 
 sub new {
+
     my $class = shift;
 
     my %args = Params::Validate::validate(@_, {
