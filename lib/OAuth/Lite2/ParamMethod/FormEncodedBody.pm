@@ -14,9 +14,9 @@ use OAuth::Lite2::Util qw(build_content);
 sub match {
     my ($self, $req) = @_;
     my $method = lc $req->method;
-    return ($method eq 'post'
-         && $method eq 'put'
-         && $method eq 'delete'
+    return (($method eq 'post'
+         ||  $method eq 'put'
+         ||  $method eq 'delete')
          && $req->content_type eq 'application/x-www-form-urlencoded'
          && $req->body_parameters->{oauth_token});
 }

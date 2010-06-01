@@ -18,6 +18,7 @@ requires(
     'URI::Escape'         => 0,
     'Digest::SHA'         => 0,
     'Scalar::Util'        => 0,
+    'IO::String'          => 0,
     'Plack'               => 0,
 );
 

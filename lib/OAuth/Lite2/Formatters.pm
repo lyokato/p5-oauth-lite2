@@ -10,15 +10,15 @@ use OAuth::Lite2::Formatter::FormURLEncoded;
 my %FORMATTERS_BY_TYPE;
 my %FORMATTERS_BY_NAME;
 
-sub _add_formatter {
+sub add_formatter {
     my ($class, $formatter) = @_;
     $FORMATTERS_BY_NAME{$formatter->name} = $formatter;
     $FORMATTERS_BY_TYPE{$formatter->type} = $formatter;
 }
 
-__PACKAGE__->_add_formatter( OAuth::Lite2::Formatter::JSON->new );
-__PACKAGE__->_add_formatter( OAuth::Lite2::Formatter::XML->new );
-__PACKAGE__->_add_formatter( OAuth::Lite2::Formatter::FormURLEncoded->new );
+__PACKAGE__->add_formatter( OAuth::Lite2::Formatter::JSON->new );
+__PACKAGE__->add_formatter( OAuth::Lite2::Formatter::XML->new );
+__PACKAGE__->add_formatter( OAuth::Lite2::Formatter::FormURLEncoded->new );
 
 sub get_formatter_by_name {
     my ($class, $name) = @_;

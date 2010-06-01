@@ -5,7 +5,6 @@ use warnings;
 
 our $VERSION = '0.01';
 
-
 1;
 __END__
 
@@ -16,7 +15,6 @@ OAuth::Lite2 - OAuth 2.0 Library
 =head1 DESCRIPTION
 
 OAuth 2.0 Library
-
 
 =head1 SEE ALSO
 

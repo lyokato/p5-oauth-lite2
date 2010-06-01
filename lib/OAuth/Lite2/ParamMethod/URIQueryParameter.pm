@@ -12,7 +12,7 @@ use OAuth::Lite2::Util qw(build_content);
 
 sub match {
     my ($self, $req) = @_;
-    return $req->query_parameters->{oauth_token};
+    return exists $req->query_parameters->{oauth_token};
 }
 
 sub parse {
