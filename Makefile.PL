@@ -20,6 +20,7 @@ requires(
     'Scalar::Util'        => 0,
     'IO::String'          => 0,
     'Plack'               => 0,
+    'Plack::Request'      => 0,
 );
 
 tests('t/*.t t/*/*.t');
