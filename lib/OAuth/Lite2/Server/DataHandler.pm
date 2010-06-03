@@ -59,7 +59,7 @@ sub create_or_update_auth_info {
     my ($self, %args) = @_;
     Params::Validate::validate(@_, {
         client_id   => 1,
-        user        => 1,
+        user_id     => 1,
         scope       => 1,
     });
     OAuth::Lite2::Error::AbstractMethod->throw;
@@ -68,7 +68,7 @@ sub create_or_update_auth_info {
 sub create_or_update_access_token {
     my ($self, %args) = @_;
     Params::Validate::validate(@_, {
-        auth_id     => 1,
+        auth_info   => 1,
         secret_type => 1,
     });
     OAuth::Lite2::Error::AbstractMethod->throw;

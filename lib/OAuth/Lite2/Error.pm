@@ -57,6 +57,10 @@ package OAuth::Lite2::Error::Server::MissingParam;
 our @ISA = qw(OAuth::Lite2::Error);
 sub default_message { "error" }
 
+package OAuth::Lite2::Error::Server::InvalidRefreshToken;
+our @ISA = qw(OAuth::Lite2::Error);
+sub default_message { "invalid_refresh_token" }
+
 # defined in the spec
 package OAuth::Lite2::Error::Server::UserDenied;
 our @ISA = qw(OAuth::Lite2::Error::Server);

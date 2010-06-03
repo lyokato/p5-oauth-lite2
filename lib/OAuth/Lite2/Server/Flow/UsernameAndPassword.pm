@@ -17,6 +17,4 @@ sub new {
     }, $class;
 }
 
-
 1;
-

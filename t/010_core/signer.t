@@ -5,7 +5,6 @@ use Test::More tests => 9;
 
 use OAuth::Lite2::Signer;
 
-# TODO check example variable
 my $access_token_secret = "hoge";
 
 my $signed_params = OAuth::Lite2::Signer->sign({
@@ -23,7 +22,6 @@ is($signed_params->{nonce},     q{s8djwd});
 is($signed_params->{timestamp}, q{137131200});
 is($signed_params->{algorithm}, q{hmac-sha256});
 
-# TODO verify test
 ok(OAuth::Lite2::Signer->verify({
     secret          => $access_token_secret,
     algorithm       => q{hmac-sha256},

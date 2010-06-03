@@ -11,6 +11,7 @@ __PACKAGE__->mk_accessors(qw(
     expires_in
     secret
     secret_type
+    created_on
 ));
 
 1;

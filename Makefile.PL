@@ -23,7 +23,7 @@ requires(
     'Plack::Request'      => 0,
 );
 
-tests('t/*.t t/*/*.t');
+tests('t/*.t t/*/*.t t/*/*/*.t');
 
 #author_tests('xt');
 test_requires(
