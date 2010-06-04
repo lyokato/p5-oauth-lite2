@@ -56,12 +56,25 @@ sub get_auth_info_by_refresh_token {
     return;
 }
 
+# called in following flows:
+#   - device_token
+sub get_auth_info_by_code {
+    my ($self, $device_code) = @_;
+    for my $id (keys %{ $self->{auth_info} }) {
+        my $auth_info = $self->{auth_info}{$id};
+        return $auth_info if ($auth_info->code && $auth_info->code eq $device_code);
+    }
+    return;
+}
+
 sub create_or_update_auth_info {
     my ($self, %params) = @_;
 
-    my $client_id = $params{client_id};
-    my $user_id   = $params{user_id};
-    my $scope     = $params{scope};
+    my $client_id    = $params{client_id};
+    my $user_id      = $params{user_id};
+    my $scope        = $params{scope};
+    my $code         = $params{code};
+    my $redirect_url = $params{redirect_url};
 
     my $id = ref($self)->gen_next_auth_info_id();
     my $refresh_token = sprintf q{refresh_token_%d}, $id;
@@ -73,6 +86,8 @@ sub create_or_update_auth_info {
         scope         => $scope,
         refresh_token => $refresh_token,
     });
+    $auth_info->code($code) if $code;
+    $auth_info->redirect_url($redirect_url) if $redirect_url;
 
     $self->{auth_info}{$id} = $auth_info;
 

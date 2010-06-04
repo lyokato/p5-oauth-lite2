@@ -2,13 +2,13 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use Test::More tests => 17;
+use Test::More tests => 16;
 
 use Plack::Request;
 use Try::Tiny;
 use TestDataHandler;
 use OAuth::Lite2::Server::Context;
-use OAuth::Lite2::Server::Action::Token::Refresh;
+use OAuth::Lite2::Server::Action::Token::DeviceToken;
 use OAuth::Lite2::Util qw(build_content);
 
 my $dh = TestDataHandler->new;
@@ -17,11 +17,12 @@ my $auth_info = $dh->create_or_update_auth_info(
     client_id => q{foo},
     user_id   => q{1},
     scope     => q{email},
+    code      => q{code_bar},
 );
 
 is($auth_info->refresh_token, "refresh_token_0");
 
-my $action = OAuth::Lite2::Server::Action::Token::Refresh->new;
+my $action = OAuth::Lite2::Server::Action::Token::DeviceToken->new;
 
 sub test_success {
     my $params = shift;
@@ -98,50 +99,39 @@ sub test_error {
 
 # no client id
 &test_error({
-    client_secret => q{bar},
-    refresh_token => q{buz},
+    code => q{bar},
 }, q{'client_id' not found});
 
-# no client secret
+# no code
 &test_error({
-    client_id     => q{foo},
-    refresh_token => q{buz},
-}, q{'client_secret' not found});
+    client_id => q{foo},
+}, q{'code' not found});
 
-# no refresh_token
+# invalid code
 &test_error({
-    client_id     => q{foo},
-    client_secret => q{bar},
-}, q{'refresh_token' not found});
+    client_id => q{foo},
+    code      => q{code_invalid},
+}, q{invalid_code});
 
-# invalid refresh token
-&test_error({
-    client_id     => q{foo},
-    client_secret => q{bar},
-    refresh_token => q{invalid},
-}, q{invalid_refresh_token});
 
 # invalid client_id
 &test_error({
     client_id     => q{unknown},
-    client_secret => q{bar},
-    refresh_token => $auth_info->refresh_token,
+    code          => q{code_bar},
+    secret_type   => q{hmac-sha1},
 }, q{invalid_client});
-
 
 # invalid secret type
 &test_error({
     client_id     => q{foo},
-    client_secret => q{bar},
-    refresh_token => $auth_info->refresh_token,
+    code          => q{code_bar},
     secret_type   => q{hmac-sha1},
 }, q{unsupported_secret_type});
 
 # without secret type
 &test_success({
     client_id     => q{foo},
-    client_secret => q{bar},
-    refresh_token => $auth_info->refresh_token,
+    code          => q{code_bar},
 }, {
     token         => q{access_token_1},
     expires_in    => q{3600},
@@ -151,8 +141,7 @@ sub test_error {
 # secret type
 &test_success({
     client_id     => q{foo},
-    client_secret => q{bar},
-    refresh_token => $auth_info->refresh_token,
+    code          => q{code_bar},
     secret_type   => q{hmac-sha256},
 }, {
     token         => q{access_token_2},

@@ -11,6 +11,9 @@ __PACKAGE__->mk_accessors(qw(
     client_id
     scope
     refresh_token
+
+    code
+    redirect_url
 ));
 
 1;
