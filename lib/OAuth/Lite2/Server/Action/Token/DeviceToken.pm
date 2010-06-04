@@ -23,7 +23,7 @@ sub handle_request {
     ) unless $client_id;
 
     my $auth_info = $dh->get_auth_info_by_code($code)
-        or OAuth::Lite2::Error::Server::InvalidCode->throw;
+        or OAuth::Lite2::Error::Server::BadVerificationCode->throw;
 
     OAuth::Lite2::Error::Server::InvalidClient->throw
         unless $auth_info->client_id eq $client_id;

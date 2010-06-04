@@ -13,12 +13,14 @@ sub handle_request {
     my $req = $ctx->request;
 
     my $client_id = $req->param("client_id");
-    OAuth::Lite2::Server::Error::MissingParam->throw("client_id")
-        unless $client_id;
+    OAuth::Lite2::Error::Server::MissingParam->throw(
+        message => "'client_id' not found"
+    ) unless $client_id;
 
     my $client_secret = $req->param("client_secret");
-    OAuth::Lite2::Server::Error::MissingParam->throw("client_secret")
-        unless $client_secret;
+    OAuth::Lite2::Error::Server::MissingParam->throw(
+        message => "'client_secret' not found"
+    ) unless $client_secret;
 
     my $user = $dh->get_client_user(
         client_id     => $client_id,
@@ -36,7 +38,7 @@ sub handle_request {
     my $secret_type = $req->param("secret_type");
 
     my $access_token = $dh->create_or_update_access_token(
-        auth_id     => $auth_info->id,
+        auth_info   => $auth_info,
         secret_type => $secret_type,
     );
 

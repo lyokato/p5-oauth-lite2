@@ -13,19 +13,19 @@ sub handle_request {
     my $req = $ctx->request;
 
     my $client_id = $req->param("client_id");
-    OAuth::Lite2::Server::Error::MissingParam->throw("client_id")
+    OAuth::Lite2::Error::Server::MissingParam->throw("client_id")
         unless $client_id;
 
     my $client_secret = $req->param("client_secret");
-    OAuth::Lite2::Server::Error::MissingParam->throw("client_secret")
+    OAuth::Lite2::Error::Server::MissingParam->throw("client_secret")
         unless $client_secret;
 
     my $username = $req->param("username");
-    OAuth::Lite2::Server::Error::MissingParam->throw("username")
+    OAuth::Lite2::Error::Server::MissingParam->throw("username")
         unless $username;
 
     my $password = $req->param("password");
-    OAuth::Lite2::Server::Error::MissingParam->throw("password")
+    OAuth::Lite2::Error::Server::MissingParam->throw("password")
         unless $password;
 
     my $client = $dh->get_client_user(

@@ -61,10 +61,6 @@ package OAuth::Lite2::Error::Server::InvalidRefreshToken;
 our @ISA = qw(OAuth::Lite2::Error);
 sub default_message { "invalid_refresh_token" }
 
-package OAuth::Lite2::Error::Server::InvalidCode;
-our @ISA = qw(OAuth::Lite2::Error);
-sub default_message { "invalid_code" }
-
 package OAuth::Lite2::Error::Server::InvalidClient;
 our @ISA = qw(OAuth::Lite2::Error);
 sub default_message { "invalid_client" }
