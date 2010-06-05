@@ -13,45 +13,53 @@ sub handle_request {
     my $req = $ctx->request;
 
     my $client_id = $req->param("client_id");
-    OAuth::Lite2::Error::Server::MissingParam->throw("client_id")
-        unless $client_id;
+    OAuth::Lite2::Error::Server::MissingParam->throw(
+        message => "'client_id' not found"
+    ) unless $client_id;
 
     my $client_secret = $req->param("client_secret");
-    OAuth::Lite2::Error::Server::MissingParam->throw("client_secret")
-        unless $client_secret;
+    OAuth::Lite2::Error::Server::MissingParam->throw(
+        message => "'client_secret' not found"
+    ) unless $client_secret;
 
     my $username = $req->param("username");
-    OAuth::Lite2::Error::Server::MissingParam->throw("username")
-        unless $username;
+    OAuth::Lite2::Error::Server::MissingParam->throw(
+        message => "'username'"
+    ) unless $username;
 
     my $password = $req->param("password");
-    OAuth::Lite2::Error::Server::MissingParam->throw("password")
-        unless $password;
+    OAuth::Lite2::Error::Server::MissingParam->throw(
+        message => "'password' not found"
+    ) unless $password;
 
-    my $client = $dh->get_client_user(
+    my $client_user_id = $dh->get_client_user_id(
         client_id     => $client_id,
         client_secret => $client_secret,
-    );
+    ) or OAuth::Lite2::Error::Server::InvalidClient->throw;
 
-    my $user = $dh->get_user(
+    my $user_id = $dh->get_user_id(
         username => $username,
         password => $password,
-    );
+    ) or OAuth::Lite2::Error::Server::InvalidUser->throw;
 
     my $scope = $req->param("scope");
 
     my $auth_info = $dh->create_or_update_auth_info(
         client_id => $client_id,
+        user_id   => $user_id,
         scope     => $scope,
-        user      => $user,
     );
+
+    # TODO check $auth_info
 
     my $secret_type = $req->param("secret_type");
 
     my $access_token = $dh->create_or_update_access_token(
-        auth_id     => $auth_info->id,
+        auth_info   => $auth_info,
         secret_type => $secret_type,
     );
+
+    # TODO check $access_token
 
     return $access_token;
 }

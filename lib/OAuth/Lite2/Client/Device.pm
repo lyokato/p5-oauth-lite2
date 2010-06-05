@@ -48,9 +48,9 @@ sub get_code {
     my $self = shift;
 
     my %args = Params::Validate::validate(@_, {
-        scope        => { optional => 1 },
-        format       => { optional => 1 },
-        url          => { optional => 1 },
+        scope  => { optional => 1 },
+        format => { optional => 1 },
+        url    => { optional => 1 },
     });
 
     unless (exists $args{url}) {
@@ -61,9 +61,9 @@ sub get_code {
     $args{format} ||= $self->{format};
 
     my %params = (
-        type          => 'device_code',
-        client_id     => $self->{id},
-        format        => $args{format},
+        type      => 'device_code',
+        client_id => $self->{id},
+        format    => $args{format},
     );
 
     $params{scope} = $args{scope} if $args{scope};
@@ -84,10 +84,10 @@ sub get_access_token {
     my $self = shift;
 
     my %args = Params::Validate::validate(@_, {
-        code         => 1,
-        secret_type  => { optional => 1 },
-        format       => { optional => 1 },
-        url          => { optional => 1 },
+        code        => 1,
+        secret_type => { optional => 1 },
+        format      => { optional => 1 },
+        url         => { optional => 1 },
     });
 
     unless (exists $args{url}) {
@@ -98,10 +98,10 @@ sub get_access_token {
     $args{format} ||= $self->{format};
 
     my %params = (
-        type          => 'device_token',
-        client_id     => $self->{id},
-        code          => $args{code},
-        format        => $args{format},
+        type      => 'device_token',
+        client_id => $self->{id},
+        code      => $args{code},
+        format    => $args{format},
     );
 
     $params{secret_type} = $args{secret_type}

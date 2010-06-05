@@ -65,6 +65,10 @@ package OAuth::Lite2::Error::Server::InvalidClient;
 our @ISA = qw(OAuth::Lite2::Error);
 sub default_message { "invalid_client" }
 
+package OAuth::Lite2::Error::Server::InvalidUser;
+our @ISA = qw(OAuth::Lite2::Error);
+sub default_message { "invalid_user" }
+
 # defined in the spec
 package OAuth::Lite2::Error::Server::UserDenied;
 our @ISA = qw(OAuth::Lite2::Error::Server);

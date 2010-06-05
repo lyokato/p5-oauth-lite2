@@ -22,18 +22,19 @@ sub handle_request {
         message => "'client_secret' not found"
     ) unless $client_secret;
 
-    my $user = $dh->get_client_user(
+    my $user_id = $dh->get_client_user_id(
         client_id     => $client_id,
         client_secret => $client_secret,
-    );
+    ) or OAuth::Lite2::Error::Server::InvalidClient->throw;
 
     my $scope = $req->param("scope");
 
     my $auth_info = $dh->create_or_update_auth_info(
         client_id => $client_id,
-        user      => $user,
+        user_id   => $user_id,
         scope     => $scope,
     );
+    # TODO check returned $auth_info?
 
     my $secret_type = $req->param("secret_type");
 
@@ -41,8 +42,23 @@ sub handle_request {
         auth_info   => $auth_info,
         secret_type => $secret_type,
     );
+    # TODO check returned $access_token?
 
-    return $access_token;
+    my $res = {
+        access_token => $access_token->token,
+    };
+    $res->{expires_in} = $access_token->expires_in
+        if $access_token->expires_in;
+    $res->{access_token_secret} = $access_token->secret
+        if $access_token->secret;
+    $res->{refresh_token} = $auth_info->refresh_token
+        if $auth_info->refresh_token;
+    $res->{scope} = $auth_info->scope
+        if $auth_info->scope;
+    $res->{secret_type} = $secret_type
+        if $secret_type;
+
+    return $res;
 }
 
 1;

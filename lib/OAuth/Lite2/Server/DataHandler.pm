@@ -24,7 +24,7 @@ sub validate_client_action {
     return 1;
 }
 
-sub get_user {
+sub get_user_id {
     my ($self, %args) = @_;
 
     Params::Validate::validate(@_, {
@@ -35,7 +35,7 @@ sub get_user {
     OAuth::Lite2::Error::AbstractMethod->throw;
 }
 
-sub get_client_user {
+sub get_client_user_id {
     my ($self, %args) = @_;
 
     Params::Validate::validate(@_, {

@@ -85,14 +85,14 @@ sub handle_request {
 
     my $format = $request->param("format") || "json";
     my $formatter = OAuth::Lite2::Formatters->get_formatter_by_name($format);
-    OAuth::Lite2::Server::Error::UnknownFormat->throw($format)
+    OAuth::Lite2::Error::Server::UnknownFormat->throw($format)
         unless $formatter;
 
     my $res = try {
 
     my $type = $request->param("type");
 
-    OAuth::Lite2::Server::Error::MissingParam->throw
+    OAuth::Lite2::Error::Server::MissingParam->throw
         unless $type;
 
     my $data_handler = $self->{data_handler}->new();
@@ -103,13 +103,13 @@ sub handle_request {
     });
 
     my $action = $self->{flow_actions}{$type};
-    OAuth::Lite2::Server::Error::UnsupportedType->throw($type)
+    OAuth::Lite2::Error::Server::UnsupportedType->throw($type)
         unless $action;
 
     $data_handler->validate_client_action($type,
         $request->param("client_id"),
         $request->param("client_secret")
-    ) or OAuth::Lite2::Server::Error::InvalidClientAction->throw;
+    ) or OAuth::Lite2::Error::Server::InvalidClientAction->throw;
 
     my $result = $action->handle_request($ctx);
 
@@ -120,7 +120,7 @@ sub handle_request {
 
     } catch {
 
-    if ($_->isa("OAuth::Lite2::Server::Error")) {
+    if ($_->isa("OAuth::Lite2::Error::Server")) {
 
         return $request->new_response(401,
             [ "Content-Type"  => $formatter->type,
