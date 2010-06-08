@@ -63,12 +63,13 @@ sub create_or_update_access_token {
     OAuth::Lite2::Error::AbstractMethod->throw;
 }
 
-sub create_device_code {
+sub create_or_update_device_code {
     my ($self, %args) = @_;
     Params::Validate::validate(@_, {
         client_id   => 1,
         scope       => 1,
     });
+    OAuth::Lite2::Error::AbstractMethod->throw;
 }
 
 1;

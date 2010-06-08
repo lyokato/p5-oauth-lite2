@@ -5,8 +5,11 @@ use warnings;
 
 use parent 'OAuth::Lite2::Server::DataHandler';
 
+use String::Random;
+
 use OAuth::Lite2::Error;
 use OAuth::Lite2::Model::AuthInfo;
+use OAuth::Lite2::Model::DeviceCode;
 use OAuth::Lite2::Model::AccessToken;
 
 my %ID_POD = (
@@ -50,6 +53,7 @@ sub init {
     $self->{access_token} = {};
     $self->{clients}      = {};
     $self->{users}        = {};
+    $self->{device_code}  = {};
 }
 
 sub get_user_id {
@@ -92,6 +96,32 @@ sub get_auth_info_by_code {
         return $auth_info if ($auth_info->code && $auth_info->code eq $device_code);
     }
     return;
+}
+
+# called in following flows:
+#   - device_code
+sub create_or_update_device_code {
+    my ($self, %params) = @_;
+
+    my $client_id = $params{client_id};
+    my $scope     = $params{scope} || 'all';
+
+    my $random = String::Random->new;
+    my $s = $random->randregex( sprintf '[a-zA-Z0-9]{%d}', 10 );
+
+    my $usercode = q{user_} . $s;
+    my $vercode = q{ver_} . $s;
+
+    my $device_code = OAuth::Lite2::Model::DeviceCode->new({
+        client_id        => $client_id,
+        user_code        => $usercode,
+        code             => $vercode,
+        scope            => $scope,
+        verification_url => q{http://example.org/verification},
+        expires_in       => 3600,
+    });
+    $self->{device_code}{$usercode} = $device_code;
+    return $device_code;
 }
 
 sub create_or_update_auth_info {

@@ -19,13 +19,21 @@ sub handle_request {
 
     my $scope = $req->param("scope");
 
-    my $dev_code = $dh->create_device_code(
+    my $dev_code = $dh->create_or_update_device_code(
         client_id => $client_id,
         scope     => $scope,
     );
     # XXX unless($dev_code)
 
-    return $dev_code;
+    my $res = {
+        code             => $dev_code->code,
+        user_code        => $dev_code->user_code,
+        verification_url => $dev_code->verification_url,
+    };
+    $res->{expires_in} = $dev_code->expires_in if $dev_code->{expires_in};
+    $res->{interval} = $dev_code->interval if $dev_code->interval;
+
+    return $res;
 }
 
 1;
