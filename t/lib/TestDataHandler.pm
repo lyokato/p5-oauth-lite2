@@ -37,12 +37,26 @@ sub add_client {
     };
 }
 
+sub add_user {
+    my ($self, %args) = @_;
+    $self->{users}{ $args{username} } = {
+        password => $args{password},
+    };
+}
+
 sub init {
     my $self = shift;
     $self->{auth_info}    = {};
     $self->{access_token} = {};
     $self->{clients}      = {};
     $self->{users}        = {};
+}
+
+sub get_user_id {
+    my ($self, $username, $password) = @_;
+    return unless ($username && exists $self->{users}{$username});
+    return unless ($password && $self->{users}{$username}{password} eq $password);
+    return $username;
 }
 
 # called in folling flows:
@@ -54,6 +68,7 @@ sub get_client_user_id {
     my ($self, $client_id, $client_secret) = @_;
     return unless ($client_id && exists $self->{clients}{$client_id});
     return unless ($client_secret && $self->{clients}{$client_id}{secret} eq $client_secret);
+    return $self->{clients}{$client_id};
 }
 
 # called in following flows:

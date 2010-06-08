@@ -56,8 +56,21 @@ sub handle_request {
     );
 
     # TODO check $access_token
+    my $res = {
+        access_token => $access_token->token,
+    };
+    $res->{expires_in} = $access_token->expires_in
+        if $access_token->expires_in;
+    $res->{access_token_secret} = $access_token->secret
+        if $access_token->secret;
+    $res->{refresh_token} = $auth_info->refresh_token
+        if $auth_info->refresh_token;
+    $res->{scope} = $auth_info->scope
+        if $auth_info->scope;
+    $res->{secret_type} = $secret_type
+        if $secret_type;
 
-    return $access_token;
+    return $res;
 }
 
 1;

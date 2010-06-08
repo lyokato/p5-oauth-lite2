@@ -25,7 +25,7 @@ OAuth::Lite2::Agent::PSGIMock - Agnent class for test which use PSGI App
     my $client = OAuth::Lite2::Client::UsernameAndPassword->new(
         client_id     => q{foo},
         client_secret => q{bar},
-        agent         => $agent, 
+        agent         => $agent,
     );
 
     my $res = $client->get_access_token(
@@ -61,12 +61,12 @@ sub new {
     my $class = shift;
 
     my %args = Params::Validate::validate(@_, {
-        app => { type => CODEREF },     
+        app => { type => CODEREF },
     });
 
     my $self = bless {
-        app => $args{app}, 
-    }, $class; 
+        app => $args{app},
+    }, $class;
 
     return $self;
 }
