@@ -16,7 +16,7 @@ sub call {
     my ($self, $env) = @_;
 
     my $handler = OAuth::Lite2::Server::EndPoint::ProtectedResource->new(
-        data_handler => $self->data_handlr, 
+        data_handler => $self->data_handlr,
     );
 
     try {

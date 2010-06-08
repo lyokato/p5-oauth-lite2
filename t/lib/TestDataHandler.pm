@@ -131,7 +131,7 @@ sub create_or_update_auth_info {
     my $user_id      = $params{user_id};
     my $scope        = $params{scope};
     my $code         = $params{code};
-    my $redirect_url = $params{redirect_url};
+    my $redirect_uri = $params{redirect_uri};
 
     my $id = ref($self)->gen_next_auth_info_id();
     my $refresh_token = sprintf q{refresh_token_%d}, $id;
@@ -144,7 +144,7 @@ sub create_or_update_auth_info {
         refresh_token => $refresh_token,
     });
     $auth_info->code($code) if $code;
-    $auth_info->redirect_url($redirect_url) if $redirect_url;
+    $auth_info->redirect_uri($redirect_uri) if $redirect_uri;
 
     $self->{auth_info}{$id} = $auth_info;
 

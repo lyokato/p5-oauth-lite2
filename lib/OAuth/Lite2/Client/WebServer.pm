@@ -5,9 +5,11 @@ use warnings;
 
 use Params::Validate qw(HASHREF);
 use Carp ();
+use bytes ();
 use URI;
 use LWP::UserAgent;
 use HTTP::Request;
+use HTTP::Headers;
 
 use OAuth::Lite2;
 use OAuth::Lite2::Util qw(build_content);
@@ -114,9 +116,11 @@ sub get_access_token {
     $params{secret_type} = $args{secret_type}
         if $args{secret_type};
 
-    my $req = HTTP::Request->new( POST => $args{url} );
-    $req->content_type(q{application/x-www-form-urlencoded});
-    $req->content( build_content(\%params) );
+    my $content = build_content(\%params);
+    my $headers = HTTP::Headers->new;
+    $headers->header("Content-Type" => q{application/x-www-form-urlencoded});
+    $headers->header("Content-Length" => bytes::length($content));
+    my $req = HTTP::Request->new( POST => $args{url}, $headers, $content );
 
     my $res = $self->{agent}->request($req);
 
@@ -154,9 +158,11 @@ sub refresh_access_token {
     $params{secret_type} = $args{secret_type}
         if $args{secret_type};
 
-    my $req = HTTP::Request->new( POST => $args{url} );
-    $req->content_type(q{application/x-www-form-urlencoded});
-    $req->content( build_content(\%params) );
+    my $content = build_content(\%params);
+    my $headers = HTTP::Headers->new;
+    $headers->header("Content-Type" => q{application/x-www-form-urlencoded});
+    $headers->header("Content-Length" => bytes::length($content));
+    my $req = HTTP::Request->new( POST => $args{url}, $headers, $content );
 
     my $res = $self->{agent}->request($req);
 

@@ -12,10 +12,10 @@ use OAuth::Lite2::ParamMethods;
 sub new {
     my $class = shift;
     my %args = Params::Validate::validate(@_, {
-        data_handler => { isa => 'OAuth::Lite2::Server::DataHandler' }, 
+        data_handler => { isa => 'OAuth::Lite2::Server::DataHandler' },
     });
     my $self = bless {
-        data_handler => $args{data_handler}, 
+        data_handler => $args{data_handler},
     }, $class;
     $self;
 }

@@ -61,7 +61,7 @@ sub new {
     my $class = shift;
 
     my %args = Params::Validate::validate(@_, {
-        app => { type => CODEREF },
+        app => 1,
     });
 
     my $self = bless {

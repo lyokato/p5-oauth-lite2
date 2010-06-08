@@ -17,6 +17,10 @@ sub handle_request {
         message => "'client_id' not found"
     ) unless $client_id;
 
+    # TODO
+    # $dh->get_client_by_id($clinet_id)
+    #   or OAuth::Lite2::Error::Server::InvalidClinet->throw;
+
     my $scope = $req->param("scope");
 
     my $dev_code = $dh->create_or_update_device_code(
@@ -30,7 +34,7 @@ sub handle_request {
         user_code        => $dev_code->user_code,
         verification_url => $dev_code->verification_url,
     };
-    $res->{expires_in} = $dev_code->expires_in if $dev_code->{expires_in};
+    $res->{expires_in} = $dev_code->expires_in if $dev_code->expires_in;
     $res->{interval} = $dev_code->interval if $dev_code->interval;
 
     return $res;

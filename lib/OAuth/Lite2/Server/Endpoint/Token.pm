@@ -20,9 +20,7 @@ use OAuth::Lite2::Error;
 sub new {
     my $class = shift;
     my %args = Params::Validate::validate(@_, {
-        data_handler => {
-            isa => 'OAuth::Lite2::Server::DataHandler'
-        },
+        data_handler => 1
     });
     my $self = bless {
         flow_actions => {},
@@ -92,10 +90,11 @@ sub handle_request {
 
     my $type = $request->param("type");
 
-    OAuth::Lite2::Error::Server::MissingParam->throw
-        unless $type;
+    OAuth::Lite2::Error::Server::MissingParam->throw(
+        message => "'type' not found"
+    ) unless $type;
 
-    my $data_handler = $self->{data_handler}->new();
+    my $data_handler = $self->{data_handler};
 
     my $ctx = OAuth::Lite2::Server::Context->new({
         request      => $request,
@@ -103,13 +102,13 @@ sub handle_request {
     });
 
     my $action = $self->{flow_actions}{$type};
-    OAuth::Lite2::Error::Server::UnsupportedType->throw($type)
+    OAuth::Lite2::Error::Server::UnsupportedType->throw(
+        message => sprintf(q{unsupported type, "%s"}, $type) )
         unless $action;
 
-    $data_handler->validate_client_action($type,
-        $request->param("client_id"),
-        $request->param("client_secret")
-    ) or OAuth::Lite2::Error::Server::InvalidClientAction->throw;
+    # TODO:
+    # $data_handler->validate_client_action($type, $request->param("client_id"))
+    #     or OAuth::Lite2::Error::Server::InvalidClientAction->throw;
 
     my $result = $action->handle_request($ctx);
 

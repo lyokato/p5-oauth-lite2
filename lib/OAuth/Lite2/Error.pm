@@ -50,12 +50,12 @@ sub default_message { "invalid param method" }
 
 package OAuth::Lite2::Error::Server;
 our @ISA = qw(OAuth::Lite2::Error);
-sub default_message { "error" }
+sub default_message { "server error" }
 
 # not defined int the spec
 package OAuth::Lite2::Error::Server::MissingParam;
 our @ISA = qw(OAuth::Lite2::Error);
-sub default_message { "error" }
+sub default_message { "missing_param" }
 
 package OAuth::Lite2::Error::Server::InvalidRefreshToken;
 our @ISA = qw(OAuth::Lite2::Error);
@@ -68,6 +68,10 @@ sub default_message { "invalid_client" }
 package OAuth::Lite2::Error::Server::InvalidUser;
 our @ISA = qw(OAuth::Lite2::Error);
 sub default_message { "invalid_user" }
+
+package OAuth::Lite2::Error::Server::UnsupportedType;
+our @ISA = qw(OAuth::Lite2::Error);
+sub default_message { "unsupported_type" }
 
 # defined in the spec
 package OAuth::Lite2::Error::Server::UserDenied;

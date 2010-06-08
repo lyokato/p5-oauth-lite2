@@ -20,7 +20,7 @@ my $auth_info = $dh->create_or_update_auth_info(
     user_id      => q{1},
     scope        => q{email},
     code         => q{code_bar},
-    redirect_url => q{http://example.org/callback},
+    redirect_uri => q{http://example.org/callback},
 );
 
 is($auth_info->refresh_token, "refresh_token_0");
@@ -103,14 +103,14 @@ sub test_error {
 # no client id
 &test_error({
     code          => q{bar},
-    redirect_url  => q{http://example.org/callback},
+    redirect_uri  => q{http://example.org/callback},
     client_secret => q{secret_value},
 }, q{'client_id' not found});
 
 # no code
 &test_error({
     client_id     => q{foo},
-    redirect_url  => q{http://example.org/callback},
+    redirect_uri  => q{http://example.org/callback},
     client_secret => q{secret_value},
 }, q{'code' not found});
 
@@ -118,22 +118,22 @@ sub test_error {
 &test_error({
     client_id     => q{foo},
     code          => q{bar},
-    redirect_url  => q{http://example.org/callback},
+    redirect_uri  => q{http://example.org/callback},
 }, q{'client_secret' not found});
 
-# no redirect_url
+# no redirect_uri
 &test_error({
     client_id     => q{foo},
     code          => q{bar},
     client_secret => q{secret_value},
-}, q{'redirect_url' not found});
+}, q{'redirect_uri' not found});
 
 # invalid client_id
 &test_error({
     client_id     => q{unknown},
     code          => q{code_bar},
     client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/callback},
+    redirect_uri  => q{http://example.org/callback},
 }, q{invalid_client});
 
 # invalid client_secret
@@ -141,7 +141,7 @@ sub test_error {
     client_id     => q{foo},
     code          => q{code_bar},
     client_secret => q{secret_unknown},
-    redirect_url  => q{http://example.org/callback},
+    redirect_uri  => q{http://example.org/callback},
 }, q{invalid_client});
 
 # invalid code
@@ -149,7 +149,7 @@ sub test_error {
     client_id     => q{foo},
     code          => q{code_invalid},
     client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/callback},
+    redirect_uri  => q{http://example.org/callback},
 }, q{bad_verification_code});
 
 # url mismatch
@@ -157,7 +157,7 @@ sub test_error {
     client_id     => q{foo},
     code          => q{code_bar},
     client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/unknown},
+    redirect_uri  => q{http://example.org/unknown},
 }, q{redirect_uri_mismatch});
 
 # invalid secret type
@@ -165,7 +165,7 @@ sub test_error {
     client_id     => q{foo},
     code          => q{code_bar},
     client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/callback},
+    redirect_uri  => q{http://example.org/callback},
     secret_type   => q{hmac-sha1},
 }, q{unsupported_secret_type});
 
@@ -174,7 +174,7 @@ sub test_error {
     client_id     => q{foo},
     code          => q{code_bar},
     client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/callback},
+    redirect_uri  => q{http://example.org/callback},
 }, {
     token         => q{access_token_1},
     expires_in    => q{3600},
@@ -186,7 +186,7 @@ sub test_error {
     client_id     => q{foo},
     code          => q{code_bar},
     client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/callback},
+    redirect_uri  => q{http://example.org/callback},
     secret_type   => q{hmac-sha256},
 }, {
     token         => q{access_token_2},

@@ -13,7 +13,7 @@ __PACKAGE__->mk_accessors(qw(
     refresh_token
 
     code
-    redirect_url
+    redirect_uri
 ));
 
 1;

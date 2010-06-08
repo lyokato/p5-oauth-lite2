@@ -17,10 +17,10 @@ sub handle_request {
         message => "'code' not found"
     ) unless $code;
 
-    my $redirect_url = $req->param("redirect_url");
+    my $redirect_uri = $req->param("redirect_uri");
     OAuth::Lite2::Error::Server::MissingParam->throw(
-        message => "'redirect_url' not found"
-    ) unless $redirect_url;
+        message => "'redirect_uri' not found"
+    ) unless $redirect_uri;
 
     my $client_id = $req->param("client_id");
     OAuth::Lite2::Error::Server::MissingParam->throw(
@@ -42,8 +42,8 @@ sub handle_request {
         unless ($auth_info->client_id eq $client_id);
 
     OAuth::Lite2::Error::Server::RedirectURIMismatch->throw
-        unless ( $auth_info->redirect_url
-            && $auth_info->redirect_url eq $redirect_url);
+        unless ( $auth_info->redirect_uri
+            && $auth_info->redirect_uri eq $redirect_uri);
 
     my $secret_type = $req->param("secret_type");
 

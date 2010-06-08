@@ -14,7 +14,8 @@ sub name { OAuth::Lite2::Error::AbstractMethod->throw }
 
 sub token_endpoint_actions {
     my $self = shift;
-    keys %{$self->{token_endpoint_actions}};
+    my @keys = keys %{ $self->{token_endpoint_actions} };
+    return \@keys;
 }
 
 sub get_token_endpoint_action {
