@@ -47,3 +47,6 @@ my $res = $client->get_access_token(
     #url          => q{},
 );
 
+# is($res->access_token, "");
+# is($res->refresh_token, "");
+# is($res->expires_in, "3600");

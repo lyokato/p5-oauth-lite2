@@ -12,7 +12,7 @@ use OAuth::Lite2::ParamMethods;
 sub new {
     my $class = shift;
     my %args = Params::Validate::validate(@_, {
-        data_handler => { isa => 'OAuth::Lite2::Server::DataHandler' },
+        data_handler => 1,
     });
     my $self = bless {
         data_handler => $args{data_handler},
@@ -31,7 +31,7 @@ sub validate {
     my ($token, $params) = $parser->parse($req);
     OAuth::Lite2::Error->throw unless $token;
 
-    my $dh = $self->{data_handler}->new;
+    my $dh = $self->{data_handler};
     my $access_token = $dh->get_access_token($token);
     OAuth::Lite2::Error::TokenNotFound->throw unless $access_token;
     OAuth::Lite2::Error::TokenExpired->throw  unless $access_token->expires_in > time;
