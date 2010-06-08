@@ -18,6 +18,12 @@ my %ID_POD = (
     user         => 0,
 );
 
+my %AUTH_INFO;
+my %ACCESS_TOKEN;
+my %DEVICE_CODE;
+my %CLIENTS;
+my %USERS;
+
 sub gen_next_auth_info_id {
     my $class = shift;
     $ID_POD{auth_info}++;
@@ -34,32 +40,27 @@ sub gen_next_access_token_id {
 }
 
 sub add_client {
-    my ($self, %args) = @_;
-    $self->{clients}{ $args{id} } = {
+    my ($class, %args) = @_;
+    $CLIENTS{ $args{id} } = {
         secret => $args{secret},
     };
 }
 
 sub add_user {
-    my ($self, %args) = @_;
-    $self->{users}{ $args{username} } = {
+    my ($class, %args) = @_;
+    $USERS{ $args{username} } = {
         password => $args{password},
     };
 }
 
 sub init {
     my $self = shift;
-    $self->{auth_info}    = {};
-    $self->{access_token} = {};
-    $self->{clients}      = {};
-    $self->{users}        = {};
-    $self->{device_code}  = {};
 }
 
 sub get_user_id {
     my ($self, $username, $password) = @_;
-    return unless ($username && exists $self->{users}{$username});
-    return unless ($password && $self->{users}{$username}{password} eq $password);
+    return unless ($username && exists $USERS{$username});
+    return unless ($password && $USERS{$username}{password} eq $password);
     return $username;
 }
 
@@ -70,9 +71,9 @@ sub get_user_id {
 # - refresh
 sub get_client_user_id {
     my ($self, $client_id, $client_secret) = @_;
-    return unless ($client_id && exists $self->{clients}{$client_id});
-    return unless ($client_secret && $self->{clients}{$client_id}{secret} eq $client_secret);
-    return $self->{clients}{$client_id};
+    return unless ($client_id && exists $CLIENTS{$client_id});
+    return unless ($client_secret && $CLIENTS{$client_id}{secret} eq $client_secret);
+    return $CLIENTS{$client_id};
 }
 
 # called in following flows:
@@ -80,8 +81,8 @@ sub get_client_user_id {
 sub get_auth_info_by_refresh_token {
     my ($self, $refresh_token) = @_;
 
-    for my $id (keys %{ $self->{auth_info} }) {
-        my $auth_info = $self->{auth_info}{$id};
+    for my $id (keys %AUTH_INFO) {
+        my $auth_info = $AUTH_INFO{$id};
         return $auth_info if $auth_info->{refresh_token} eq $refresh_token;
     }
     return;
@@ -91,8 +92,8 @@ sub get_auth_info_by_refresh_token {
 #   - device_token
 sub get_auth_info_by_code {
     my ($self, $device_code) = @_;
-    for my $id (keys %{ $self->{auth_info} }) {
-        my $auth_info = $self->{auth_info}{$id};
+    for my $id (keys %AUTH_INFO) {
+        my $auth_info = $AUTH_INFO{$id};
         return $auth_info if ($auth_info->code && $auth_info->code eq $device_code);
     }
     return;
@@ -120,7 +121,7 @@ sub create_or_update_device_code {
         verification_url => q{http://example.org/verification},
         expires_in       => 3600,
     });
-    $self->{device_code}{$usercode} = $device_code;
+    $DEVICE_CODE{$usercode} = $device_code;
     return $device_code;
 }
 
@@ -146,7 +147,7 @@ sub create_or_update_auth_info {
     $auth_info->code($code) if $code;
     $auth_info->redirect_uri($redirect_uri) if $redirect_uri;
 
-    $self->{auth_info}{$id} = $auth_info;
+    $AUTH_INFO{$id} = $auth_info;
 
     return $auth_info;
 }
@@ -179,7 +180,7 @@ sub create_or_update_access_token {
     $attrs{secret} = sprintf q{access_token_secret_%d}, $id if $secret_type;
 
     my $access_token = OAuth::Lite2::Model::AccessToken->new(\%attrs);
-    $self->{access_token}{$auth_id} = $access_token;
+    $ACCESS_TOKEN{$auth_id} = $access_token;
     return $access_token;
 }
 

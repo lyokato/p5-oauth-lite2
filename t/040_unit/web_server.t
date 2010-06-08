@@ -9,9 +9,9 @@ use OAuth::Lite2::Server::Endpoint::Token;
 use OAuth::Lite2::Agent::PSGIMock;
 use OAuth::Lite2::Client::WebServer;
 
+TestDataHandler->add_client(id => q{foo}, secret => q{bar});
+TestDataHandler->add_user(username => q{buz}, password => q{hoge});
 my $dh = TestDataHandler->new;
-$dh->add_client(id => q{foo}, secret => q{bar});
-$dh->add_user(username => q{buz}, password => q{hoge});
 
 # set authorization-fixture-data instead of user interaction
 my $auth_info = $dh->create_or_update_auth_info(
@@ -23,7 +23,7 @@ my $auth_info = $dh->create_or_update_auth_info(
 );
 
 my $app = OAuth::Lite2::Server::Endpoint::Token->new(
-    data_handler => $dh,
+    data_handler => "TestDataHandler",
 );
 
 $app->support_flows(qw(web_server));

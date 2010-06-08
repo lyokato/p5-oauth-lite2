@@ -93,7 +93,7 @@ sub handle_request {
         message => "'type' not found"
     ) unless $type;
 
-    my $data_handler = $self->{data_handler};
+    my $data_handler = $self->{data_handler}->new;
 
     my $ctx = OAuth::Lite2::Server::Context->new({
         request      => $request,

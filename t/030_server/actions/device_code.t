@@ -11,8 +11,8 @@ use OAuth::Lite2::Server::Context;
 use OAuth::Lite2::Server::Action::Token::DeviceCode;
 use OAuth::Lite2::Util qw(build_content);
 
+TestDataHandler->add_client(id => q{foo}, secret => q{bar});
 my $dh = TestDataHandler->new;
-$dh->add_client(id => q{foo}, secret => q{bar});
 
 my $auth_info = $dh->create_or_update_auth_info(
     client_id => q{foo},

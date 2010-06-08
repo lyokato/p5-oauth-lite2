@@ -11,9 +11,9 @@ use OAuth::Lite2::Server::Context;
 use OAuth::Lite2::Server::Action::Token::Username;
 use OAuth::Lite2::Util qw(build_content);
 
+TestDataHandler->add_client(id => q{foo}, secret => q{bar});
+TestDataHandler->add_user(username => q{user_1}, password => q{pass_1});
 my $dh = TestDataHandler->new;
-$dh->add_client(id => q{foo}, secret => q{bar});
-$dh->add_user(username => q{user_1}, password => q{pass_1});
 
 my $auth_info = $dh->create_or_update_auth_info(
     client_id => q{foo},
