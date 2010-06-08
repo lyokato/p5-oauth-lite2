@@ -24,7 +24,7 @@ sub handle_request {
 
     my $username = $req->param("username");
     OAuth::Lite2::Error::Server::MissingParam->throw(
-        message => "'username'"
+        message => "'username' not found"
     ) unless $username;
 
     my $password = $req->param("password");
@@ -32,15 +32,11 @@ sub handle_request {
         message => "'password' not found"
     ) unless $password;
 
-    my $client_user_id = $dh->get_client_user_id(
-        client_id     => $client_id,
-        client_secret => $client_secret,
-    ) or OAuth::Lite2::Error::Server::InvalidClient->throw;
+    my $client_user_id = $dh->get_client_user_id($client_id, $client_secret)
+        or OAuth::Lite2::Error::Server::InvalidClient->throw;
 
-    my $user_id = $dh->get_user_id(
-        username => $username,
-        password => $password,
-    ) or OAuth::Lite2::Error::Server::InvalidUser->throw;
+    my $user_id = $dh->get_user_id($username, $password)
+        or OAuth::Lite2::Error::Server::InvalidUser->throw;
 
     my $scope = $req->param("scope");
 

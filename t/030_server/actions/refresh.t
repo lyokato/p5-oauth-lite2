@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use Test::More tests => 17;
+use Test::More tests => 18;
 
 use Plack::Request;
 use Try::Tiny;
@@ -12,6 +12,7 @@ use OAuth::Lite2::Server::Action::Token::Refresh;
 use OAuth::Lite2::Util qw(build_content);
 
 my $dh = TestDataHandler->new;
+$dh->add_client(id => q{foo}, secret => q{bar});
 
 my $auth_info = $dh->create_or_update_auth_info(
     client_id => q{foo},
@@ -114,13 +115,6 @@ sub test_error {
     client_secret => q{bar},
 }, q{'refresh_token' not found});
 
-# invalid refresh token
-&test_error({
-    client_id     => q{foo},
-    client_secret => q{bar},
-    refresh_token => q{invalid},
-}, q{invalid_refresh_token});
-
 # invalid client_id
 &test_error({
     client_id     => q{unknown},
@@ -128,6 +122,19 @@ sub test_error {
     refresh_token => $auth_info->refresh_token,
 }, q{invalid_client});
 
+# invalid client_secret
+&test_error({
+    client_id     => q{foo},
+    client_secret => q{unknown},
+    refresh_token => $auth_info->refresh_token,
+}, q{invalid_client});
+
+# invalid refresh token
+&test_error({
+    client_id     => q{foo},
+    client_secret => q{bar},
+    refresh_token => q{invalid},
+}, q{invalid_refresh_token});
 
 # invalid secret type
 &test_error({

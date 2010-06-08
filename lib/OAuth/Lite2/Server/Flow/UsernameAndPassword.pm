@@ -12,7 +12,7 @@ sub new {
     my $class = shift;
     bless {
         token_endpoint_actions => {
-            username  => OAuth::Lite2::Server::Action::Token::Username->new,
+            username => OAuth::Lite2::Server::Action::Token::Username->new,
         },
     }, $class;
 }

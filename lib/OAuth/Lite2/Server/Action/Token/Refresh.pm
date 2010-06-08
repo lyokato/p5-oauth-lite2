@@ -27,10 +27,13 @@ sub handle_request {
         message => "'refresh_token' not found"
     ) unless $refresh_token;
 
+    $dh->get_client_user_id($client_id, $client_secret)
+        or OAuth::Lite2::Error::Server::InvalidClient->throw;
 
     my $auth_info = $dh->get_auth_info_by_refresh_token($refresh_token)
         or OAuth::Lite2::Error::Server::InvalidRefreshToken->throw;
     # TODO check returned $auth_info?
+
     OAuth::Lite2::Error::Server::InvalidClient->throw
         unless $auth_info->client_id eq $client_id;
 

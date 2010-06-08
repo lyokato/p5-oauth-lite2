@@ -25,23 +25,12 @@ sub validate_client_action {
 }
 
 sub get_user_id {
-    my ($self, %args) = @_;
-
-    Params::Validate::validate(@_, {
-        username => 1,
-        password => 1,
-    });
-
+    my ($self, $username, $password) = @_;
     OAuth::Lite2::Error::AbstractMethod->throw;
 }
 
 sub get_client_user_id {
-    my ($self, %args) = @_;
-
-    Params::Validate::validate(@_, {
-        client_id     => 1,
-        client_secret => 1,
-    });
+    my ($self, $client_id, $client_secret) = @_;
     OAuth::Lite2::Error::AbstractMethod->throw;
 }
 

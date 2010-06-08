@@ -11,7 +11,7 @@ requires(
     'LWP::UserAgent'      => 0,
     'Try::Tiny'           => 0,
     'Class::ErrorHandler' => 0,
-    'String::Rondom'      => 0,
+    'String::Random'      => 0,
     'JSON'                => 0,
     'XML::LibXML'         => 0,
     'Hash::MultiValue'    => 0,

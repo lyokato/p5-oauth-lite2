@@ -32,15 +32,14 @@ sub handle_request {
         message => "'client_secret' not found"
     ) unless $client_secret;
 
+    $dh->get_client_user_id($client_id, $client_secret)
+        or OAuth::Lite2::Error::Server::InvalidClient->throw;
+
     my $auth_info = $dh->get_auth_info_by_code($code)
         or OAuth::Lite2::Error::Server::BadVerificationCode->throw;
 
     OAuth::Lite2::Error::Server::InvalidClient->throw
         unless ($auth_info->client_id eq $client_id);
-
-    # TODO
-    #$dh->validate_client($client_id, $client_secret)
-    #    or OAuth::Lite2::Error::Server::InvalidClient->throw;
 
     OAuth::Lite2::Error::Server::RedirectURIMismatch->throw
         unless ( $auth_info->redirect_url

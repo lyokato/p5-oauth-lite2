@@ -12,18 +12,12 @@ use OAuth::Lite2::Model::AccessToken;
 my %ID_POD = (
     auth_info    => 0,
     access_token => 0,
-    client       => 0,
     user         => 0,
 );
 
 sub gen_next_auth_info_id {
     my $class = shift;
     $ID_POD{auth_info}++;
-}
-
-sub gen_next_client_id {
-    my $class = shift;
-    $ID_POD{client}++;
 }
 
 sub gen_next_user_id {
@@ -36,12 +30,30 @@ sub gen_next_access_token_id {
     $ID_POD{access_token}++;
 }
 
+sub add_client {
+    my ($self, %args) = @_;
+    $self->{clients}{ $args{id} } = {
+        secret => $args{secret},
+    };
+}
+
 sub init {
     my $self = shift;
     $self->{auth_info}    = {};
     $self->{access_token} = {};
     $self->{clients}      = {};
     $self->{users}        = {};
+}
+
+# called in folling flows:
+# - web_server
+# - username
+# - client_credentials
+# - refresh
+sub get_client_user_id {
+    my ($self, $client_id, $client_secret) = @_;
+    return unless ($client_id && exists $self->{clients}{$client_id});
+    return unless ($client_secret && $self->{clients}{$client_id}{secret} eq $client_secret);
 }
 
 # called in following flows:

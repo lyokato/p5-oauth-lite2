@@ -13,8 +13,9 @@ sub handle_request {
     my $req = $ctx->request;
 
     my $client_id = $req->param("client_id");
-    OAuth::Lite2::Error::Server::MissingParam->throw("client_id")
-        unless $client_id;
+    OAuth::Lite2::Error::Server::MissingParam->throw(
+        message => "'client_id' not found"
+    ) unless $client_id;
 
     my $scope = $req->param("scope");
 

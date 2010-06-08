@@ -22,10 +22,8 @@ sub handle_request {
         message => "'client_secret' not found"
     ) unless $client_secret;
 
-    my $user_id = $dh->get_client_user_id(
-        client_id     => $client_id,
-        client_secret => $client_secret,
-    ) or OAuth::Lite2::Error::Server::InvalidClient->throw;
+    my $user_id = $dh->get_client_user_id($client_id, $client_secret)
+        or OAuth::Lite2::Error::Server::InvalidClient->throw;
 
     my $scope = $req->param("scope");
 

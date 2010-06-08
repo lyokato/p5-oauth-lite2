@@ -2,30 +2,27 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use Test::More tests => 20;
+use Test::More tests => 16;
 
 use Plack::Request;
 use Try::Tiny;
 use TestDataHandler;
 use OAuth::Lite2::Server::Context;
-use OAuth::Lite2::Server::Action::Token::WebServer;
+use OAuth::Lite2::Server::Action::Token::ClientCredentials;
 use OAuth::Lite2::Util qw(build_content);
 
 my $dh = TestDataHandler->new;
-
-$dh->add_client(id => q{foo}, secret => q{secret_value});
+$dh->add_client(id => q{foo}, secret => q{bar});
 
 my $auth_info = $dh->create_or_update_auth_info(
-    client_id    => q{foo},
-    user_id      => q{1},
-    scope        => q{email},
-    code         => q{code_bar},
-    redirect_url => q{http://example.org/callback},
+    client_id => q{foo},
+    user_id   => q{1},
+    scope     => q{email},
 );
 
 is($auth_info->refresh_token, "refresh_token_0");
 
-my $action = OAuth::Lite2::Server::Action::Token::WebServer->new;
+my $action = OAuth::Lite2::Server::Action::Token::ClientCredentials->new;
 
 sub test_success {
     my $params = shift;
@@ -102,97 +99,54 @@ sub test_error {
 
 # no client id
 &test_error({
-    code          => q{bar},
-    redirect_url  => q{http://example.org/callback},
-    client_secret => q{secret_value},
+    client_secret => q{bar},
 }, q{'client_id' not found});
-
-# no code
-&test_error({
-    client_id     => q{foo},
-    redirect_url  => q{http://example.org/callback},
-    client_secret => q{secret_value},
-}, q{'code' not found});
 
 # no client secret
 &test_error({
     client_id     => q{foo},
-    code          => q{bar},
-    redirect_url  => q{http://example.org/callback},
 }, q{'client_secret' not found});
-
-# no redirect_url
-&test_error({
-    client_id     => q{foo},
-    code          => q{bar},
-    client_secret => q{secret_value},
-}, q{'redirect_url' not found});
 
 # invalid client_id
 &test_error({
     client_id     => q{unknown},
-    code          => q{code_bar},
-    client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/callback},
+    client_secret => q{bar},
 }, q{invalid_client});
 
 # invalid client_secret
 &test_error({
     client_id     => q{foo},
-    code          => q{code_bar},
-    client_secret => q{secret_unknown},
-    redirect_url  => q{http://example.org/callback},
+    client_secret => q{unknown},
 }, q{invalid_client});
-
-# invalid code
-&test_error({
-    client_id     => q{foo},
-    code          => q{code_invalid},
-    client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/callback},
-}, q{bad_verification_code});
-
-# url mismatch
-&test_error({
-    client_id     => q{foo},
-    code          => q{code_bar},
-    client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/unknown},
-}, q{redirect_uri_mismatch});
 
 # invalid secret type
 &test_error({
     client_id     => q{foo},
-    code          => q{code_bar},
-    client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/callback},
+    client_secret => q{bar},
     secret_type   => q{hmac-sha1},
 }, q{unsupported_secret_type});
 
 # without secret type
 &test_success({
     client_id     => q{foo},
-    code          => q{code_bar},
-    client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/callback},
+    client_secret => q{bar},
 }, {
     token         => q{access_token_1},
     expires_in    => q{3600},
-    refresh_token => q{refresh_token_0},
+    refresh_token => q{refresh_token_2},
 });
 
 # secret type
 &test_success({
     client_id     => q{foo},
-    code          => q{code_bar},
-    client_secret => q{secret_value},
-    redirect_url  => q{http://example.org/callback},
+    client_secret => q{bar},
     secret_type   => q{hmac-sha256},
 }, {
     token         => q{access_token_2},
     secret        => q{access_token_secret_2},
     secret_type   => q{hmac-sha256},
     expires_in    => q{3600},
-    refresh_token => q{refresh_token_0},
+    refresh_token => q{refresh_token_3},
 });
 
+# TODO transaction?
