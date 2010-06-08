@@ -82,9 +82,8 @@ sub handle_request {
     my ($self, $request) = @_;
 
     my $format = $request->param("format") || "json";
-    my $formatter = OAuth::Lite2::Formatters->get_formatter_by_name($format);
-    OAuth::Lite2::Error::Server::UnknownFormat->throw($format)
-        unless $formatter;
+    my $formatter = OAuth::Lite2::Formatters->get_formatter_by_name($format)
+        || OAuth::Lite2::Formatters->get_formatter_by_name("json");
 
     my $res = try {
 
