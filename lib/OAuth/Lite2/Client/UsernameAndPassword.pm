@@ -3,18 +3,24 @@ package OAuth::Lite2::Client::UsernameAndPassword;
 use strict;
 use warnings;
 
+use base 'Class::ErrorHandler';
+
 use Params::Validate qw(HASHREF);
 use Carp ();
+use Try::Tiny;
 use URI;
 use LWP::UserAgent;
 use HTTP::Request;
 
+use OAuth::Lite2;
 use OAuth::Lite2::Util qw(build_content);
 use OAuth::Lite2::Error;
 use OAuth::Lite2::Formatters;
+use OAuth::Lite2::Client::TokenResponseParser;
 
 sub new {
     my $class = shift;
+
     my %args = Params::Validate::validate(@_, {
         id                => 1,
         secret            => 1,
@@ -39,6 +45,7 @@ sub new {
     }
 
     $self->{format} ||= 'json';
+    $self->{response_parser} = OAuth::Lite2::Client::TokenResponseParser->new;
 
     return $self;
 }
@@ -77,16 +84,73 @@ sub get_access_token {
     $params{secret_type} = $args{secret_type}
         if $args{secret_type};
 
-    my $req = HTTP::Request->new( POST => $args{url} );
-    $req->content_type(q{application/x-www-form-urlencoded});
-    $req->content( build_content(\%params) );
+    my $content = build_content(\%params);
+    my $headers = HTTP::Headers->new;
+    $headers->header("Content-Type" => q{application/x-www-form-urlencoded});
+    $headers->header("Content-Length" => bytes::length($content));
+    my $req = HTTP::Request->new( POST => $args{url}, $headers, $content );
 
     my $res = $self->{agent}->request($req);
 
-    my $formatter =
-        OAuth::Lite2::Formatters->get_formatter_by_type($res->content_type);
-    my $result = $formatter->parse($res->content);
+    my ($token, $errmsg);
+    try {
+        $token = $self->{response_parser}->parse($res);
+    } catch {
+        $errmsg = $_->isa("OAuth::Lite2::Error")
+            ? $_->message
+            : $_;
+    };
+    return $token || $self->error($errmsg);
 
 }
+
+sub refresh_access_token {
+    my $self = shift;
+
+    my %args = Params::Validate::validate(@_, {
+        refresh_token => 1,
+        secret_type   => { optional => 1 },
+        format        => { optional => 1 },
+        url           => { optional => 1 },
+    });
+
+    unless (exists $args{url}) {
+        $args{url} = $self->{access_token_url}
+            || Carp::croak "url not found";
+    }
+
+    $args{format} ||= $self->{format};
+
+    my %params = (
+        type          => 'refresh',
+        client_id     => $self->{id},
+        client_secret => $self->{secret},
+        refresh_token => $args{refresh_token},
+        format        => $args{format},
+    );
+
+    $params{secret_type} = $args{secret_type}
+        if $args{secret_type};
+
+    my $content = build_content(\%params);
+    my $headers = HTTP::Headers->new;
+    $headers->header("Content-Type" => q{application/x-www-form-urlencoded});
+    $headers->header("Content-Length" => bytes::length($content));
+    my $req = HTTP::Request->new( POST => $args{url}, $headers, $content );
+
+    my $res = $self->{agent}->request($req);
+
+    my ($token, $errmsg);
+    try {
+        $token = $self->{response_parser}->parse($res);
+    } catch {
+        $errmsg = $_->isa("OAuth::Lite2::Error")
+            ? $_->message
+            : $_;
+    };
+    return $token || $self->error($errmsg);
+
+}
+
 
 1;
