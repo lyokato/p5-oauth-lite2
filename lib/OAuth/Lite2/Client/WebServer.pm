@@ -3,6 +3,8 @@ package OAuth::Lite2::Client::WebServer;
 use strict;
 use warnings;
 
+use base 'Class::ErrorHandler';
+
 use Params::Validate qw(HASHREF);
 use Carp ();
 use bytes ();
@@ -10,11 +12,13 @@ use URI;
 use LWP::UserAgent;
 use HTTP::Request;
 use HTTP::Headers;
+use Try::Tiny;
 
 use OAuth::Lite2;
 use OAuth::Lite2::Util qw(build_content);
 use OAuth::Lite2::Error;
 use OAuth::Lite2::Formatters;
+use OAuth::Lite2::Client::TokenResponseParser;
 
 sub new {
 
@@ -46,6 +50,7 @@ sub new {
     }
 
     $self->{format} ||= 'json';
+    $self->{response_parser} = OAuth::Lite2::Client::TokenResponseParser->new;
 
     return $self;
 }
@@ -124,10 +129,15 @@ sub get_access_token {
 
     my $res = $self->{agent}->request($req);
 
-    my $formatter =
-        OAuth::Lite2::Formatters->get_formatter_by_type($res->content_type);
-    my $result = $formatter->parse($res->content);
-
+    my ($token, $errmsg);
+    try {
+        $token = $self->{response_parser}->parse($res);
+    } catch {
+        $errmsg = $_->isa("OAuth::Lite2::Error")
+            ? $_->message
+            : $_;
+    };
+    return $token || $self->error($errmsg);
 }
 
 sub refresh_access_token {
@@ -166,9 +176,15 @@ sub refresh_access_token {
 
     my $res = $self->{agent}->request($req);
 
-    my $formatter =
-        OAuth::Lite2::Formatters->get_formatter_by_type($res->content_type);
-    my $result = $formatter->parse($res->content);
+    my ($token, $errmsg);
+    try {
+        $token = $self->{response_parser}->parse($res);
+    } catch {
+        $errmsg = $_->isa("OAuth::Lite2::Error")
+            ? $_->message
+            : $_;
+    };
+    return $token || $self->error($errmsg);
 
 }
 

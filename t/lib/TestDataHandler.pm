@@ -24,6 +24,15 @@ my %DEVICE_CODE;
 my %CLIENTS;
 my %USERS;
 
+sub clear {
+    my $class = shift;
+    %AUTH_INFO = ();
+    %ACCESS_TOKEN = ();
+    %DEVICE_CODE = ();
+    %CLIENTS = ();
+    %USERS = ();
+}
+
 sub gen_next_auth_info_id {
     my $class = shift;
     $ID_POD{auth_info}++;

@@ -42,6 +42,10 @@ package OAuth::Lite2::Error::InvalidFormat;
 our @ISA = qw(OAuth::Lite2::Error);
 sub default_message { "invalid format" }
 
+package OAuth::Lite2::Error::InvalidResponse;
+our @ISA = qw(OAuth::Lite2::Error);
+sub default_message { "invalid response" }
+
 package OAuth::Lite2::Error::InvalidParamMethod;
 our @ISA = qw(OAuth::Lite2::Error);
 sub default_message { "invalid param method" }
