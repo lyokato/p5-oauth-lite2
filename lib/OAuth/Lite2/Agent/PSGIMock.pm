@@ -10,7 +10,7 @@ use Try::Tiny;
 
 =head1 NAME
 
-OAuth::Lite2::Agent::PSGIMock - Agnent class for test which use PSGI App
+OAuth::Lite2::Agent::PSGIMock - Agent class for test which use PSGI App
 
 =head2 SYNOPSIS
 
