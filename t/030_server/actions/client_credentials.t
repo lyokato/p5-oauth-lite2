@@ -11,6 +11,7 @@ use OAuth::Lite2::Server::Context;
 use OAuth::Lite2::Server::Action::Token::ClientCredentials;
 use OAuth::Lite2::Util qw(build_content);
 
+TestDataHandler->clear;
 TestDataHandler->add_client(id => q{foo}, secret => q{bar});
 my $dh = TestDataHandler->new;
 

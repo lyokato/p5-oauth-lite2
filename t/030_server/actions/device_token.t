@@ -11,6 +11,7 @@ use OAuth::Lite2::Server::Context;
 use OAuth::Lite2::Server::Action::Token::DeviceToken;
 use OAuth::Lite2::Util qw(build_content);
 
+TestDataHandler->clear;
 my $dh = TestDataHandler->new;
 
 my $auth_info = $dh->create_or_update_auth_info(

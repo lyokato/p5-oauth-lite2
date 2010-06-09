@@ -9,6 +9,7 @@ use OAuth::Lite2::Server::Endpoint::Token;
 use OAuth::Lite2::Agent::PSGIMock;
 use OAuth::Lite2::Client::WebServer;
 
+TestDataHandler->clear();
 TestDataHandler->add_client(id => q{foo}, secret => q{bar});
 TestDataHandler->add_user(username => q{buz}, password => q{hoge});
 my $dh = TestDataHandler->new;
