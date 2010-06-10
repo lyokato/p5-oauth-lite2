@@ -62,10 +62,10 @@ sub test_success {
         ok(!$res->{expires_in});
     }
 
-    if(exists $expected->{verification_url}) {
-        is($res->{verification_url}, $expected->{verification_url});
+    if(exists $expected->{verification_uri}) {
+        is($res->{verification_uri}, $expected->{verification_uri});
     } else {
-        ok(!$res->{verification_url});
+        ok(!$res->{verification_uri});
     }
 
 }
@@ -109,7 +109,7 @@ sub test_error {
 }, {
     code             => qr{^ver_},
     user_code        => qr{^user_},
-    verification_url => q{http://example.org/verification},
+    verification_uri => q{http://example.org/verification},
     expires_in       => q{3600},
 });
 

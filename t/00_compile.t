@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 47;
+use Test::More tests => 49;
 BEGIN {
     # core
     use_ok('OAuth::Lite2');
@@ -34,6 +34,8 @@ BEGIN {
     use_ok('OAuth::Lite2::Client');
     use_ok('OAuth::Lite2::Client::Token');
     use_ok('OAuth::Lite2::Client::TokenResponseParser');
+    use_ok('OAuth::Lite2::Client::Code');
+    use_ok('OAuth::Lite2::Client::CodeResponseParser');
 
     use_ok('OAuth::Lite2::Client::ClientCredentials');
     use_ok('OAuth::Lite2::Client::UserAgent');

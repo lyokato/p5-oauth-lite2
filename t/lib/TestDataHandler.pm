@@ -85,6 +85,13 @@ sub get_client_user_id {
     return $CLIENTS{$client_id};
 }
 
+# TODO needed?
+sub get_client_by_id {
+    my ($self, $client_id) = @_;
+    return unless ($client_id && exists $CLIENTS{$client_id});
+    return $CLIENTS{$client_id};
+}
+
 # called in following flows:
 #   - refresh
 sub get_auth_info_by_refresh_token {
@@ -127,7 +134,7 @@ sub create_or_update_device_code {
         user_code        => $usercode,
         code             => $vercode,
         scope            => $scope,
-        verification_url => q{http://example.org/verification},
+        verification_uri => q{http://example.org/verification},
         expires_in       => 3600,
     });
     $DEVICE_CODE{$usercode} = $device_code;

@@ -17,9 +17,8 @@ sub handle_request {
         message => "'client_id' not found"
     ) unless $client_id;
 
-    # TODO
-    # $dh->get_client_by_id($clinet_id)
-    #   or OAuth::Lite2::Error::Server::InvalidClinet->throw;
+    $dh->get_client_by_id($client_id)
+        or OAuth::Lite2::Error::Server::InvalidClient->throw;
 
     my $scope = $req->param("scope");
 
@@ -32,7 +31,7 @@ sub handle_request {
     my $res = {
         code             => $dev_code->code,
         user_code        => $dev_code->user_code,
-        verification_url => $dev_code->verification_url,
+        verification_uri => $dev_code->verification_uri,
     };
     $res->{expires_in} = $dev_code->expires_in if $dev_code->expires_in;
     $res->{interval} = $dev_code->interval if $dev_code->interval;

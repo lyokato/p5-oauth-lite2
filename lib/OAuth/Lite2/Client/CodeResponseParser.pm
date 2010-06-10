@@ -1,4 +1,4 @@
-package OAuth::Lite2::Client::TokenResponseParser;
+package OAuth::Lite2::Client::CodeResponseParser;
 
 use strict;
 use warnings;
@@ -6,7 +6,7 @@ use warnings;
 use Try::Tiny;
 use OAuth::Lite2::Formatters;
 use OAuth::Lite2::Error;
-use OAuth::Lite2::Client::Token;
+use OAuth::Lite2::Client::Code;
 
 sub new {
     bless {}, $_[0];
@@ -31,10 +31,18 @@ sub parse {
         my $result = $formatter->parse($http_res->content);
 
         OAuth::Lite2::Error::InvalidResponse->throw(
-            message => sprintf("Response doesn't include 'access_token'")
-        ) unless exists $result->{access_token};
+            message => sprintf("Response doesn't include 'code'")
+        ) unless exists $result->{code};
 
-        $token = OAuth::Lite2::Client::Token->new($result);
+        OAuth::Lite2::Error::InvalidResponse->throw(
+            message => sprintf("Response doesn't include 'user_code'")
+        ) unless exists $result->{user_code};
+
+        OAuth::Lite2::Error::InvalidResponse->throw(
+            message => sprintf("Response doesn't include 'verification_uri'")
+        ) unless exists $result->{verification_uri};
+
+        $token = OAuth::Lite2::Client::Code->new($result);
 
     } else {
 

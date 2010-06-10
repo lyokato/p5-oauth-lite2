@@ -149,8 +149,6 @@ sub refresh_access_token {
             : $_;
     };
     return $token || $self->error($errmsg);
-
 }
-
 
 1;

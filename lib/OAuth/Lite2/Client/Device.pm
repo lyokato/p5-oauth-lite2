@@ -3,22 +3,28 @@ package OAuth::Lite2::Client::Device;
 use strict;
 use warnings;
 
+use base 'Class::ErrorHandler';
+
 use Params::Validate qw(HASHREF);
 use Carp ();
+use Try::Tiny;
 use URI;
 use LWP::UserAgent;
 use HTTP::Request;
 
+use OAuth::Lite2;
 use OAuth::Lite2::Util qw(build_content);
 use OAuth::Lite2::Error;
 use OAuth::Lite2::Formatters;
+use OAuth::Lite2::Client::TokenResponseParser;
+use OAuth::Lite2::Client::CodeResponseParser;
 
 sub new {
     my $class = shift;
 
     my %args = Params::Validate::validate(@_, {
         id                => 1,
-        secret            => 1,
+#       secret            => 1,
         format            => { optional => 1 },
         access_token_url  => { optional => 1 },
         refresh_token_url => { optional => 1 },
@@ -27,7 +33,7 @@ sub new {
 
     my $self = bless {
         id                => undef,
-        secret            => undef,
+#       secret            => undef,
         access_token_url  => undef,
         refresh_token_url => undef,
         %args,
@@ -40,6 +46,8 @@ sub new {
     }
 
     $self->{format} ||= 'json';
+    $self->{token_response_parser} = OAuth::Lite2::Client::TokenResponseParser->new;
+    $self->{code_response_parser} = OAuth::Lite2::Client::CodeResponseParser->new;
 
     return $self;
 }
@@ -68,16 +76,23 @@ sub get_code {
 
     $params{scope} = $args{scope} if $args{scope};
 
-    my $req = HTTP::Request->new( POST => $args{url} );
-    $req->content_type(q{application/x-www-form-urlencoded});
-    $req->content( build_content(\%params) );
+    my $content = build_content(\%params);
+    my $headers = HTTP::Headers->new;
+    $headers->header("Content-Type" => q{application/x-www-form-urlencoded});
+    $headers->header("Content-Length" => bytes::length($content));
+    my $req = HTTP::Request->new( POST => $args{url}, $headers, $content );
 
     my $res = $self->{agent}->request($req);
 
-    my $formatter =
-        OAuth::Lite2::Formatters->get_formatter_by_type($res->content_type);
-    my $result = $formatter->parse($res->content);
-
+    my ($code, $errmsg);
+    try {
+        $code = $self->{code_response_parser}->parse($res);
+    } catch {
+        $errmsg = $_->isa("OAuth::Lite2::Error")
+            ? $_->message
+            : $_;
+    };
+    return $code || $self->error($errmsg);
 }
 
 sub get_access_token {
@@ -107,17 +122,23 @@ sub get_access_token {
     $params{secret_type} = $args{secret_type}
         if $args{secret_type};
 
-    my $req = HTTP::Request->new( POST => $args{url} );
-    $req->content_type(q{application/x-www-form-urlencoded});
-    $req->content( build_content(\%params) );
+    my $content = build_content(\%params);
+    my $headers = HTTP::Headers->new;
+    $headers->header("Content-Type" => q{application/x-www-form-urlencoded});
+    $headers->header("Content-Length" => bytes::length($content));
+    my $req = HTTP::Request->new( POST => $args{url}, $headers, $content );
 
     my $res = $self->{agent}->request($req);
 
-    my $formatter =
-        OAuth::Lite2::Formatters->get_formatter_by_type($res->content_type);
-
-    my $result = $formatter->parse($res->content);
-
+    my ($token, $errmsg);
+    try {
+        $token = $self->{token_response_parser}->parse($res);
+    } catch {
+        $errmsg = $_->isa("OAuth::Lite2::Error")
+            ? $_->message
+            : $_;
+    };
+    return $token || $self->error($errmsg);
 }
 
 1;
