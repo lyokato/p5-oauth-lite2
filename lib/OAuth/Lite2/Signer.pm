@@ -42,7 +42,8 @@ sub sign {
 
     my $algorithm =
         OAuth::Lite2::Signer::Algorithms->get_algorithm(lc $args{algorithm})
-            or OAuth::Lite2::Error::UnsupportedAlgorithm->throw($args{algorithm});
+            or OAuth::Lite2::Error::UnsupportedAlgorithm->throw(
+                message => sprintf(q{Unsupported algorithm: %s}, $args{algorithm}));
 
     my $signature = encode_base64($algorithm->hash($args{secret}, $string));
     chomp $signature;

@@ -130,6 +130,10 @@ package OAuth::Lite2::Error::UnsupportedSecretType;
 our @ISA = qw(OAuth::Lite2::Error::Server);
 sub default_message { "unsupported_secret_type" }
 
+package OAuth::Lite2::Error::TokenNotFound;
+our @ISA = qw(OAuth::Lite2::Error::Server);
+sub default_message { "token_not_found" }
+
 package OAuth::Lite2::Error::TokenExpired;
 our @ISA = qw(OAuth::Lite2::Error::Server);
 sub default_message { "token_expired" }

@@ -81,55 +81,56 @@ sub compile_psgi_app {
 sub handle_request {
     my ($self, $request) = @_;
 
+    # TODO change to user Accept header
     my $format = $request->param("format") || "json";
     my $formatter = OAuth::Lite2::Formatters->get_formatter_by_name($format)
         || OAuth::Lite2::Formatters->get_formatter_by_name("json");
 
     my $res = try {
 
-    my $type = $request->param("type");
+        my $type = $request->param("type");
 
-    OAuth::Lite2::Error::Server::MissingParam->throw(
-        message => "'type' not found"
-    ) unless $type;
+        OAuth::Lite2::Error::Server::MissingParam->throw(
+            message => "'type' not found"
+        ) unless $type;
 
-    my $data_handler = $self->{data_handler}->new;
+        my $data_handler = $self->{data_handler}->new;
 
-    my $ctx = OAuth::Lite2::Server::Context->new({
-        request      => $request,
-        data_handler => $data_handler,
-    });
+        my $ctx = OAuth::Lite2::Server::Context->new({
+            request      => $request,
+            data_handler => $data_handler,
+        });
 
-    my $action = $self->{flow_actions}{$type};
-    OAuth::Lite2::Error::Server::UnsupportedType->throw(
-        message => sprintf(q{unsupported type, "%s"}, $type) )
-        unless $action;
+        my $action = $self->{flow_actions}{$type};
+        OAuth::Lite2::Error::Server::UnsupportedType->throw(
+            message => sprintf(q{unsupported type, "%s"}, $type) )
+            unless $action;
 
-    # TODO:
-    # $data_handler->validate_client_action($type, $request->param("client_id"))
-    #     or OAuth::Lite2::Error::Server::InvalidClientAction->throw;
+        # TODO:
+        # $data_handler->validate_client_action($type, $request->param("client_id"))
+        #     or OAuth::Lite2::Error::Server::InvalidClientAction->throw;
 
-    my $result = $action->handle_request($ctx);
+        my $result = $action->handle_request($ctx);
 
-    return $request->new_response(200,
-        [ "Content-Type"  => $formatter->type,
-          "Cache-Control" => "no-store"  ],
-        [ $formatter->format($result) ]);
+        return $request->new_response(200,
+            [ "Content-Type"  => $formatter->type,
+              "Cache-Control" => "no-store"  ],
+            [ $formatter->format($result) ]);
 
     } catch {
 
-    if ($_->isa("OAuth::Lite2::Error::Server")) {
+        if ($_->isa("OAuth::Lite2::Error::Server")) {
 
-        return $request->new_response(401,
-            [ "Content-Type"  => $formatter->type,
-              "Cache-Control" => "no-store"  ],
-            [ $formatter->format({ error => $_->message }) ]);
+            return $request->new_response(401,
+                [ "Content-Type"  => $formatter->type,
+                  "Cache-Control" => "no-store"  ],
+                [ $formatter->format({ error => $_->message }) ]);
 
-    } else {
+        } else {
 
-        die $_;
+            die $_;
 
-    }
+        }
 
     };
 }

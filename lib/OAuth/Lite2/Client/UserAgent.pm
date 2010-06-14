@@ -3,8 +3,11 @@ package OAuth::Lite2::Client::UserAgent;
 use strict;
 use warnings;
 
+use base 'Class::ErrorHandler';
+
 use Params::Validate qw(HASHREF);
 use Carp ();
+use Try::Tiny;
 use URI;
 use LWP::UserAgent;
 use HTTP::Request;
@@ -19,7 +22,7 @@ sub new {
 
     my %args = Params::Validate::validate(@_, {
         id                => 1,
-        secret            => 1,
+#       secret            => 1,
         format            => { optional => 1 },
         authorize_url     => { optional => 1 },
         access_token_url  => { optional => 1 },
@@ -29,7 +32,7 @@ sub new {
 
     my $self = bless {
         id                => undef,
-        secret            => undef,
+#       secret            => undef,
         authorize_url     => undef,
         access_token_url  => undef,
         refresh_token_url => undef,

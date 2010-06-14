@@ -17,7 +17,7 @@ sub handle_request {
         message => "'client_id' not found"
     ) unless $client_id;
 
-    $dh->get_client_by_id($client_id)
+    $dh->validate_client_by_id($client_id)
         or OAuth::Lite2::Error::Server::InvalidClient->throw;
 
     my $scope = $req->param("scope");

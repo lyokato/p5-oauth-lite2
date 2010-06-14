@@ -19,9 +19,19 @@ sub init {
 }
 
 sub validate_client_action {
-    my ($self, $flow, $client_id, $client_name) = @_;
+    my ($self, $flow, $client_id) = @_;
     OAuth::Lite2::Error::AbstractMethod->throw;
     return 1;
+}
+
+sub validate_client_by_id {
+    my ($self, $client_id) = @_;
+    1;
+}
+
+sub validate_user_by_id {
+    my ($self, $user_id) = @_;
+    1;
 }
 
 sub get_user_id {
@@ -31,6 +41,16 @@ sub get_user_id {
 
 sub get_client_user_id {
     my ($self, $client_id, $client_secret) = @_;
+    OAuth::Lite2::Error::AbstractMethod->throw;
+}
+
+sub get_access_token {
+    my ($self, $token) = @_;
+    OAuth::Lite2::Error::AbstractMethod->throw;
+}
+
+sub get_auth_info_by_id {
+    my ($self, $id) = @_;
     OAuth::Lite2::Error::AbstractMethod->throw;
 }
 
