@@ -29,7 +29,7 @@ sub handle_request {
     # TODO check returned $auth_info
     #unless ($auth_info && ref($auth_info) eq '')
 
-    OAuth::Lite2::Server::Error::InvalidClientID->throw
+    OAuth::Lite2::Server::Error::InvalidClient->throw
         unless ($auth_info->client_id eq $client_id);
 
     OAuth::Lite2::Server::Error::RedirectURIMismatch->throw

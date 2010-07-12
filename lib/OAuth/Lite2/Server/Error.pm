@@ -100,9 +100,7 @@ L<http://tools.ietf.org/html/draft-ietf-oauth-v2-09#section-5.2>
 
 =item OAuth::Lite2::Server::Error::InvalidToken
 
-=item OAuth::Lite2::Server::Error::InvalidClientID
-
-=item OAuth::Lite2::Server::Error::InvalidClientCredentials
+=item OAuth::Lite2::Server::Error::InvalidClient
 
 =item OAuth::Lite2::Server::Error::InvalidGrant
 
@@ -144,65 +142,60 @@ sub state       { $_[0]->{state}        }
 # OAuth Server Error
 package OAuth::Lite2::Server::Error::InvalidRequest;
 our @ISA = qw(OAuth::Lite2::Server::Error);
-sub type { "invalid-request" }
+sub type { "invalid_request" }
 
-package OAuth::Lite2::Server::Error::InvalidClientID;
+package OAuth::Lite2::Server::Error::InvalidClient;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
-sub type { "invalid-client-id" }
-
-package OAuth::Lite2::Server::Error::InvalidClientCredentials;
-our @ISA = qw(OAuth::Lite2::Server::Error);
-sub code { 401 }
-sub type { "invalid-client-credentials" }
+sub type { "invalid_client" }
 
 package OAuth::Lite2::Server::Error::UnauthorizedClient;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
-sub type { "unauthorized-client" }
+sub type { "unauthorized_client" }
 
 package OAuth::Lite2::Server::Error::RedirectURIMismatch;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
-sub type { "redirect-uri-mismatch" }
+sub type { "redirect_uri_mismatch" }
 
 package OAuth::Lite2::Server::Error::AccessDenied;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
-sub type { "access-denied" }
+sub type { "access_denied" }
 
 package OAuth::Lite2::Server::Error::UnsupportedResourceType;
 our @ISA = qw(OAuth::Lite2::Server::Error);
-sub type { "unsupported-resource-type" }
+sub type { "unsupported_resource_type" }
 
 package OAuth::Lite2::Server::Error::InvalidGrant;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
-sub type { "invalid-grant" }
+sub type { "invalid_grant" }
 
 package OAuth::Lite2::Server::Error::UnsupportedGrantType;
 our @ISA = qw(OAuth::Lite2::Server::Error);
-sub type { "unsupported-grant-type" }
+sub type { "unsupported_grant_type" }
 
 package OAuth::Lite2::Server::Error::InvalidScope;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
-sub type { "invalid-scope" }
+sub type { "invalid_scope" }
 
 package OAuth::Lite2::Server::Error::InvalidToken;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
-sub type { "invalid-token" }
+sub type { "invalid_token" }
 
 package OAuth::Lite2::Server::Error::ExpiredToken;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
-sub type { "expired-token" }
+sub type { "expired_token" }
 
 package OAuth::Lite2::Server::Error::InefficientScope;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
-sub type { "inefficient-scope" }
+sub type { "inefficient_scope" }
 
 package OAuth::Lite2::Server::Error;
 

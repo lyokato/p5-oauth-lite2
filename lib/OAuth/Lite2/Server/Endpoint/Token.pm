@@ -103,7 +103,7 @@ sub handle_request {
             );
 
         $data_handler->validate_client($client_id, $client_secret, $type)
-            or OAuth::Lite2::Server::Error::InvalidClientCredentials->throw;
+            or OAuth::Lite2::Server::Error::InvalidClient->throw;
 
         my $ctx = OAuth::Lite2::Server::Context->new({
             request      => $request,

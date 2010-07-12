@@ -40,7 +40,7 @@ TEST_AUTH_HEADER: {
         oauth_params => {},
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{Token token="access_token_value"});
+    is($req->header("Authorization"), q{OAuth access_token_value});
     is(uc $req->method, q{GET});
     ok(!$req->content);
 
@@ -68,7 +68,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{Token token="access_token_value", algorithm="hmac-sha256", nonce="s8djwd", signature="wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D", timestamp="137131200"});
+    is($req->header("Authorization"), q{OAuth access_token_value, algorithm="hmac-sha256", nonce="s8djwd", signature="wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D", timestamp="137131200"});
     is(uc $req->method, q{GET});
     ok(!$req->content);
 
@@ -99,7 +99,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource?buz=hoge&foo=bar});
-    is($req->header("Authorization"), q{Token token="access_token_value"});
+    is($req->header("Authorization"), q{OAuth access_token_value});
     is(uc $req->method, q{GET});
     ok(!$req->content);
 
@@ -132,7 +132,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource?buz=hoge&foo=bar});
-    is($req->header("Authorization"), q{Token token="access_token_value"});
+    is($req->header("Authorization"), q{OAuth access_token_value});
     is(uc $req->method, q{GET});
     ok(!$req->content);
 
@@ -151,7 +151,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{Token token="access_token_value"});
+    is($req->header("Authorization"), q{OAuth access_token_value});
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/x-www-form-urlencoded});
     is($req->content, q{buz=hoge&foo=bar});
@@ -187,7 +187,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{Token token="access_token_value"});
+    is($req->header("Authorization"), q{OAuth access_token_value});
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/x-www-form-urlencoded});
     is($req->content, q{buz=hoge&foo=bar});
@@ -206,7 +206,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{Token token="access_token_value"});
+    is($req->header("Authorization"), q{OAuth access_token_value});
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/xml});
     is($req->content, q{<content>value</content>});
@@ -220,7 +220,7 @@ TEST_AUTH_HEADER: {
         oauth_params => {},
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{Token token="access_token_value"});
+    is($req->header("Authorization"), q{OAuth access_token_value});
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/xml});
     is($req->content, q{});

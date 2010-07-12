@@ -9,7 +9,7 @@ use Plack::Request;
 use Plack::Util::Accessor qw(realm data_handler);
 use Try::Tiny;
 
-use OAuth::Lite2::Error;
+use OAuth::Lite2::Server::Error;
 use OAuth::Lite2::ParamMethods;
 
 sub call {
@@ -24,30 +24,30 @@ sub call {
         warn "insecure barere token request" unless $req->secure;
 
         my $parser = OAuth::Lite2::ParamMethods->get_param_parser($req)
-            or OAuth::Lite2::Error::InvalidRequest->throw;
+            or OAuth::Lite2::Server::Error::InvalidRequest->throw;
 
         # after draft-v6, $params aren't required.
         my ($token, $params) = $parser->parse($req);
-        OAuth::Lite2::Error::InvalidRequest->throw unless $token;
+        OAuth::Lite2::Server::Error::InvalidRequest->throw unless $token;
 
         my $dh = $self->{data_handler}->new;
 
         my $access_token = $dh->get_access_token($token);
 
-        OAuth::Lite2::Error::InvalidToken->throw
+        OAuth::Lite2::Server::Error::InvalidToken->throw
             unless $access_token;
 
-        OAuth::Lite2::Error::ExpiredToken->throw
+        OAuth::Lite2::Server::Error::ExpiredToken->throw
             unless ($access_token->created_on + $access_token->expires_in > time());
 
         my $auth_info = $dh->get_auth_info_by_id($access_token->auth_id);
         # TODO validate auth_info
 
         $dh->validate_client_by_id($auth_info->client_id)
-            or OAuth::Lite2::Error::InvalidToken->throw;
+            or OAuth::Lite2::Server::Error::InvalidToken->throw;
 
         $dh->validate_user_by_id($auth_info->user_id)
-            or OAuth::Lite2::Error::InvalidToken->throw;
+            or OAuth::Lite2::Server::Error::InvalidToken->throw;
 
         $env->{REMOTE_USER}    = $auth_info->user_id;
         $env->{X_OAUTH_CLIENT} = $auth_info->client_id;
@@ -57,7 +57,7 @@ sub call {
 
     } catch {
 
-        if ($_->isa("OAuth::Lite2::Error")) {
+        if ($_->isa("OAuth::Lite2::Server::Error")) {
 
             my @params;
             push(@params, sprintf(q{realm='%s'}, $self->{realm}))
@@ -71,7 +71,7 @@ sub call {
             #     if $_->scope;
 
             return [ $_->code, [ "WWW-Authenticate" =>
-                join(', ', @params) ], [  ] ];
+                "OAuth " . join(', ', @params) ], [  ] ];
 
         } else {
 

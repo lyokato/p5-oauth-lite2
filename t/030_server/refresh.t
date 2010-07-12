@@ -102,21 +102,21 @@ sub test_error {
 &test_error({
     client_id     => q{foo},
     client_secret => q{bar},
-}, q{invalid-request});
+}, q{invalid_request});
 
 # invalid client_id
 &test_error({
     client_id     => q{unknown},
     client_secret => q{bar},
     refresh_token => $auth_info->refresh_token,
-}, q{invalid-client-id});
+}, q{invalid_client});
 
 # invalid refresh token
 &test_error({
     client_id     => q{foo},
     client_secret => q{bar},
     refresh_token => q{invalid},
-}, q{invalid-grant});
+}, q{invalid_grant});
 
 # without secret type
 &test_success({

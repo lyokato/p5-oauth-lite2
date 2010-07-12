@@ -1,4 +1,4 @@
-package OAuth::Lite2::Server::GrantHandler::BasicCredentials;
+package OAuth::Lite2::Server::GrantHandler::Password;
 
 use strict;
 use warnings;

@@ -18,7 +18,7 @@ my $app = OAuth::Lite2::Server::Endpoint::Token->new(
     data_handler => "TestDataHandler",
 );
 
-$app->support_grant_types(qw(basic-credentials refresh-token));
+$app->support_grant_types(qw(password refresh_token));
 
 my $agent = OAuth::Lite2::Agent::PSGIMock->new(app => $app);
 
@@ -35,14 +35,14 @@ $res = $client->get_access_token(
     password => q{hoge},
 );
 ok(!$res, q{response should be undef});
-is($client->errstr, q{invalid-grant}, q{user should be invalid});
+is($client->errstr, q{invalid_grant}, q{user should be invalid});
 
 $res = $client->get_access_token(
     username => q{buz},
     password => q{invalid},
 );
 ok(!$res, q{response should be undef});
-is($client->errstr, q{invalid-grant}, q{user should be invalid});
+is($client->errstr, q{invalid_grant}, q{user should be invalid});
 
 $res = $client->get_access_token(
     username => q{buz},
@@ -59,7 +59,7 @@ $res = $client->refresh_access_token(
     refresh_token => q{invalid_refresh_token},
 );
 ok(!$res, q{response should be undef});
-is($client->errstr, q{invalid-grant}, q{refresh-token should be invalid});
+is($client->errstr, q{invalid_grant}, q{refresh-token should be invalid});
 
 $res = $client->refresh_access_token(
     refresh_token => q{refresh_token_0},

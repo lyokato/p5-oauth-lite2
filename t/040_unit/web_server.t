@@ -27,7 +27,7 @@ my $app = OAuth::Lite2::Server::Endpoint::Token->new(
     data_handler => "TestDataHandler",
 );
 
-$app->support_grant_types(qw(authorization-code refresh-token));
+$app->support_grant_types(qw(authorization_code refresh_token));
 
 my $agent = OAuth::Lite2::Agent::PSGIMock->new(app => $app);
 
@@ -45,7 +45,7 @@ $res = $client->get_access_token(
 );
 
 ok(!$res, q{response should be undef});
-is($client->errstr, q{invalid-grant}, q{verification code should be invalid});
+is($client->errstr, q{invalid_grant}, q{verification code should be invalid});
 
 $res = $client->get_access_token(
     code         => q{valid_code},
@@ -53,7 +53,7 @@ $res = $client->get_access_token(
 );
 
 ok(!$res, q{response should be undef});
-is($client->errstr, q{redirect-uri-mismatch}, q{redirect_uri should be invalid});
+is($client->errstr, q{redirect_uri_mismatch}, q{redirect_uri should be invalid});
 
 $res = $client->get_access_token(
     code         => q{valid_code},
@@ -71,7 +71,7 @@ $res = $client->refresh_access_token(
     refresh_token => q{invalid_refresh_token},
 );
 ok(!$res, q{response should be undef});
-is($client->errstr, q{invalid-grant}, q{refresh_token should be invalid-grant});
+is($client->errstr, q{invalid_grant}, q{refresh_token should be invalid-grant});
 
 $res = $client->refresh_access_token(
     refresh_token => q{refresh_token_0},

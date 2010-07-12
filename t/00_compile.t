@@ -37,7 +37,7 @@ BEGIN {
 
     use_ok('OAuth::Lite2::Server::GrantHandlers');
     use_ok('OAuth::Lite2::Server::GrantHandler::AuthorizationCode');
-    use_ok('OAuth::Lite2::Server::GrantHandler::BasicCredentials');
+    use_ok('OAuth::Lite2::Server::GrantHandler::Password');
     use_ok('OAuth::Lite2::Server::GrantHandler::RefreshToken');
 
     use_ok('OAuth::Lite2::Server::Endpoint::Token');

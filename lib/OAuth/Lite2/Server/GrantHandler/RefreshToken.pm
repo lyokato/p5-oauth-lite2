@@ -24,7 +24,7 @@ sub handle_request {
         or OAuth::Lite2::Server::Error::InvalidGrant->throw;
     # TODO check returned $auth_info?
 
-    OAuth::Lite2::Server::Error::InvalidClientID->throw
+    OAuth::Lite2::Server::Error::InvalidClient->throw
         unless $auth_info->client_id eq $client_id;
 
     my $access_token = $dh->create_or_update_access_token(

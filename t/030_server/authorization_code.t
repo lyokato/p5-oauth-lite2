@@ -105,14 +105,14 @@ sub test_error {
     client_id     => q{foo},
     redirect_uri  => q{http://example.org/callback},
     client_secret => q{secret_value},
-}, q{invalid-request});
+}, q{invalid_request});
 
 # no redirect_uri
 &test_error({
     client_id     => q{foo},
     code          => q{bar},
     client_secret => q{secret_value},
-}, q{invalid-request});
+}, q{invalid_request});
 
 # invalid client_id
 &test_error({
@@ -120,7 +120,7 @@ sub test_error {
     code          => q{code_bar},
     client_secret => q{secret_value},
     redirect_uri  => q{http://example.org/callback},
-}, q{invalid-client-id});
+}, q{invalid_client});
 
 # invalid code
 &test_error({
@@ -128,7 +128,7 @@ sub test_error {
     code          => q{code_invalid},
     client_secret => q{secret_value},
     redirect_uri  => q{http://example.org/callback},
-}, q{invalid-grant});
+}, q{invalid_grant});
 
 # url mismatch
 &test_error({
@@ -136,7 +136,7 @@ sub test_error {
     code          => q{code_bar},
     client_secret => q{secret_value},
     redirect_uri  => q{http://example.org/unknown},
-}, q{redirect-uri-mismatch});
+}, q{redirect_uri_mismatch});
 
 # without secret type
 &test_success({

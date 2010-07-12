@@ -29,7 +29,7 @@ my $app = OAuth::Lite2::Server::Endpoint::Token->new(
     data_handler => "TestDataHandler",
 );
 
-$app->support_grant_types(qw(authorization-code));
+$app->support_grant_types(qw(authorization_code));
 
 my $agent = OAuth::Lite2::Agent::PSGIMock->new(app => $app);
 
@@ -46,7 +46,7 @@ $res = $invalid_client1->get_access_token(
     password => q{hoge},
 );
 ok(!$res, q{response should be undef});
-is($invalid_client1->errstr, q{unsupported-grant-type}, q{tried to use unsupported grant-type});
+is($invalid_client1->errstr, q{unsupported_grant_type}, q{tried to use unsupported grant-type});
 
 my $invalid_client2 = OAuth::Lite2::Client::WebServer->new(
     id                => q{invalid},
@@ -60,7 +60,7 @@ $res = $invalid_client2->get_access_token(
     redirect_uri => q{http://example.org/callback},
 );
 ok(!$res, q{response should be undef});
-is($invalid_client2->errstr, q{invalid-client-credentials}, q{invalid client_id});
+is($invalid_client2->errstr, q{invalid_client}, q{invalid client_id});
 
 my $invalid_client3 = OAuth::Lite2::Client::WebServer->new(
     id                => q{foo},
@@ -74,7 +74,7 @@ $res = $invalid_client3->get_access_token(
     redirect_uri => q{http://example.org/callback},
 );
 ok(!$res, q{response should be undef});
-is($invalid_client3->errstr, q{invalid-client-credentials}, q{invalid client_secret});
+is($invalid_client3->errstr, q{invalid_client}, q{invalid client_secret});
 
 my $invalid_client4 = OAuth::Lite2::Client::WebServer->new(
     id                => q{aaa},
@@ -89,6 +89,6 @@ $res = $invalid_client4->get_access_token(
     redirect_uri => q{http://example.org/callback},
 );
 ok(!$res, q{response should be undef});
-is($invalid_client4->errstr, q{invalid-client-credentials}, q{This client isn't allowed to use this grant-type});
+is($invalid_client4->errstr, q{invalid_client}, q{This client isn't allowed to use this grant-type});
 
 

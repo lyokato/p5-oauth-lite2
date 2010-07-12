@@ -8,7 +8,7 @@ use Plack::Request;
 use Try::Tiny;
 use TestDataHandler;
 use OAuth::Lite2::Server::Context;
-use OAuth::Lite2::Server::GrantHandler::BasicCredentials;
+use OAuth::Lite2::Server::GrantHandler::Password;
 use OAuth::Lite2::Util qw(build_content);
 
 TestDataHandler->clear;
@@ -24,7 +24,7 @@ my $auth_info = $dh->create_or_update_auth_info(
 
 is($auth_info->refresh_token, "refresh_token_0");
 
-my $action = OAuth::Lite2::Server::GrantHandler::BasicCredentials->new;
+my $action = OAuth::Lite2::Server::GrantHandler::Password->new;
 
 sub test_success {
     my $params = shift;
@@ -104,14 +104,14 @@ sub test_error {
     client_id     => q{foo},
     client_secret => q{bar},
     password      => q{pass_1},
-}, q{invalid-request});
+}, q{invalid_request});
 
 # no password
 &test_error({
     client_id     => q{foo},
     client_secret => q{bar},
     username      => q{user_1},
-}, q{invalid-request});
+}, q{invalid_request});
 
 # invalid client_id
 #&test_error({
@@ -127,7 +127,7 @@ sub test_error {
     client_secret => q{bar},
     username      => q{unknown},
     password      => q{pass_1},
-}, q{invalid-grant});
+}, q{invalid_grant});
 
 # invalid password
 &test_error({
@@ -135,7 +135,7 @@ sub test_error {
     client_secret => q{bar},
     username      => q{user_1},
     password      => q{unknown},
-}, q{invalid-grant});
+}, q{invalid_grant});
 
 &test_success({
     client_id     => q{foo},

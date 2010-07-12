@@ -15,22 +15,24 @@ use Hash::MultiValue;
 sub match {
     my ($self, $req) = @_;
     my $header = $req->header("Authorization");
-    return ($header && $header =~ /^\s*Token (.*)$/);
+    return ($header && $header =~ /^\s*OAuth\s+(.+)$/);
 }
 
 sub parse {
     my ($self, $req) = @_;
     my $header = $req->header("Authorization");
-    $header =~ s/^\s*Token\s*//;
+    $header =~ s/^\s*OAuth\s+([^\s\,]+)//;
+    my $token = $1;
     my $params = Hash::MultiValue->new;
-    for my $attr (split /,\s*/, $header) {
-        my ($key, $val) = split /=/, $attr, 2;
-        $val =~ s/^"//;
-        $val =~ s/"$//;
-        $params->add($key, decode_param($val));
+    if ($header) {
+        $header =~ s/^\s*\,\s*//;
+        for my $attr (split /,\s*/, $header) {
+            my ($key, $val) = split /=/, $attr, 2;
+            $val =~ s/^"//;
+            $val =~ s/"$//;
+            $params->add($key, decode_param($val));
+        }
     }
-    my $token = $params->{token};
-    $params->remove('token');
     return ($token, $params);
 }
 
@@ -50,7 +52,6 @@ sub build_request {
         encode_param($_),
         encode_param($oauth_params->{$_})
     } keys %$oauth_params;
-    unshift(@pairs, sprintf(q{token="%s"}, $args{token}));
 
     my $params  = $args{params} || {};
     my $method  = uc $args{method};
@@ -64,7 +65,9 @@ sub build_request {
     } else {
         $headers = HTTP::Headers->new;
     }
-    $headers->header(Authorization => sprintf(q{Token %s}, join(", ", @pairs)) );
+    my $auth_header = sprintf(q{OAuth %s}, $args{token});
+    $auth_header .= ", " . join(", ", @pairs) if @pairs > 0;
+    $headers->header(Authorization => $auth_header);
 
     if ($method eq 'GET' || $method eq 'DELETE') {
         my $url = URI->new($args{url});

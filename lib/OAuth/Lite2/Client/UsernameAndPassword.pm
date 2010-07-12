@@ -69,7 +69,7 @@ sub get_access_token {
     # $args{format} ||= $self->{format};
 
     my %params = (
-        grant_type    => 'basic-credentials',
+        grant_type    => 'password',
         client_id     => $self->{id},
         client_secret => $self->{secret},
         username      => $args{username},
@@ -119,7 +119,7 @@ sub refresh_access_token {
     # $args{format} ||= $self->{format};
 
     my %params = (
-        grant_type    => 'refresh-token',
+        grant_type    => 'refresh_token',
         client_id     => $self->{id},
         client_secret => $self->{secret},
         refresh_token => $args{refresh_token},

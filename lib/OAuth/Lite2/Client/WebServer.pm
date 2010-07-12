@@ -108,7 +108,7 @@ sub get_access_token {
     # $args{format} ||= $self->{format};
 
     my %params = (
-        grant_type    => 'authorization-code',
+        grant_type    => 'authorization_code',
         client_id     => $self->{id},
         client_secret => $self->{secret},
         code          => $args{code},
@@ -154,7 +154,7 @@ sub refresh_access_token {
     # $args{format} ||= $self->{format};
 
     my %params = (
-        grant_type    => 'refresh-token',
+        grant_type    => 'refresh_token',
         client_id     => $self->{id},
         client_secret => $self->{secret},
         refresh_token => $args{refresh_token},
