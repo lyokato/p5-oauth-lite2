@@ -7,9 +7,8 @@ use parent 'OAuth::Lite2::Server::DataHandler';
 
 use String::Random;
 
-use OAuth::Lite2::Error;
+use OAuth::Lite2::Server::Error;
 use OAuth::Lite2::Model::AuthInfo;
-use OAuth::Lite2::Model::DeviceCode;
 use OAuth::Lite2::Model::AccessToken;
 
 my %ID_POD = (
@@ -115,32 +114,6 @@ sub get_auth_info_by_code {
     return;
 }
 
-# called in following flows:
-#   - device_code
-sub create_or_update_device_code {
-    my ($self, %params) = @_;
-
-    my $client_id = $params{client_id};
-    my $scope     = $params{scope} || 'all';
-
-    my $random = String::Random->new;
-    my $s = $random->randregex( sprintf '[a-zA-Z0-9]{%d}', 10 );
-
-    my $usercode = q{user_} . $s;
-    my $vercode = q{ver_} . $s;
-
-    my $device_code = OAuth::Lite2::Model::DeviceCode->new({
-        client_id        => $client_id,
-        user_code        => $usercode,
-        code             => $vercode,
-        scope            => $scope,
-        verification_uri => q{http://example.org/verification},
-        expires_in       => 3600,
-    });
-    $DEVICE_CODE{$usercode} = $device_code;
-    return $device_code;
-}
-
 sub create_or_update_auth_info {
     my ($self, %params) = @_;
 
@@ -186,18 +159,35 @@ sub create_or_update_access_token {
         created_on => time(),
     );
 
-    my $secret_type = $params{secret_type};
-    if ($secret_type) {
-        # check if $secret_type is supported
-        OAuth::Lite2::Error::UnsupportedSecretType->throw
-            if ($secret_type ne 'hmac-sha256');
-        $attrs{secret_type} = $secret_type;
-    }
-    $attrs{secret} = sprintf q{access_token_secret_%d}, $id if $secret_type;
+    #my $secret_type = $params{secret_type};
+    #if ($secret_type) {
+    #    # check if $secret_type is supported
+    #    OAuth::Lite2::Error::UnsupportedSecretType->throw
+    #        if ($secret_type ne 'hmac-sha256');
+    #    $attrs{secret_type} = $secret_type;
+    #}
+    #$attrs{secret} = sprintf q{access_token_secret_%d}, $id if $secret_type;
 
     my $access_token = OAuth::Lite2::Model::AccessToken->new(\%attrs);
     $ACCESS_TOKEN{$auth_id} = $access_token;
     return $access_token;
+}
+
+sub validate_client {
+    my ($self, $client_id, $client_secret, $type) = @_;
+    return 0 unless exists $CLIENTS{ $client_id };
+    my $client = $CLIENTS{ $client_id };
+    return 0 unless $client->{secret} eq $client_secret;
+
+    if ($client_id eq 'aaa') {
+        if ($type eq 'basic-credentials') {
+            return 1;
+        } else {
+            return 0;
+        }
+    } else {
+        return 1;
+    }
 }
 
 1;

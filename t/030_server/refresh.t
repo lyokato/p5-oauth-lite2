@@ -2,13 +2,13 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use Test::More tests => 18;
+use Test::More tests => 9;
 
 use Plack::Request;
 use Try::Tiny;
 use TestDataHandler;
 use OAuth::Lite2::Server::Context;
-use OAuth::Lite2::Server::Action::Token::Refresh;
+use OAuth::Lite2::Server::GrantHandler::RefreshToken;
 use OAuth::Lite2::Util qw(build_content);
 
 TestDataHandler->clear;
@@ -23,7 +23,7 @@ my $auth_info = $dh->create_or_update_auth_info(
 
 is($auth_info->refresh_token, "refresh_token_0");
 
-my $action = OAuth::Lite2::Server::Action::Token::Refresh->new;
+my $action = OAuth::Lite2::Server::GrantHandler::RefreshToken->new;
 
 sub test_success {
     my $params = shift;
@@ -41,7 +41,7 @@ sub test_success {
         $res = $action->handle_request($ctx);
     } catch {
         my $error_message = ($_->isa("OAuth::Lite2::Error"))
-            ? $_->message : $_;
+            ? $_->type : $_;
     };
 
     if(exists $expected->{token}) {
@@ -92,58 +92,31 @@ sub test_error {
         my $res = $action->handle_request($ctx);
     } catch {
         $error_message = ($_->isa("OAuth::Lite2::Error"))
-            ? $_->message : $_;
+            ? $_->type : $_;
     };
 
     like($error_message, qr/$message/);
 }
 
-# no client id
-&test_error({
-    client_secret => q{bar},
-    refresh_token => q{buz},
-}, q{'client_id' not found});
-
-# no client secret
-&test_error({
-    client_id     => q{foo},
-    refresh_token => q{buz},
-}, q{'client_secret' not found});
-
 # no refresh_token
 &test_error({
     client_id     => q{foo},
     client_secret => q{bar},
-}, q{'refresh_token' not found});
+}, q{invalid-request});
 
 # invalid client_id
 &test_error({
     client_id     => q{unknown},
     client_secret => q{bar},
     refresh_token => $auth_info->refresh_token,
-}, q{invalid_client});
-
-# invalid client_secret
-&test_error({
-    client_id     => q{foo},
-    client_secret => q{unknown},
-    refresh_token => $auth_info->refresh_token,
-}, q{invalid_client});
+}, q{invalid-client-id});
 
 # invalid refresh token
 &test_error({
     client_id     => q{foo},
     client_secret => q{bar},
     refresh_token => q{invalid},
-}, q{invalid_refresh_token});
-
-# invalid secret type
-&test_error({
-    client_id     => q{foo},
-    client_secret => q{bar},
-    refresh_token => $auth_info->refresh_token,
-    secret_type   => q{hmac-sha1},
-}, q{unsupported_secret_type});
+}, q{invalid-grant});
 
 # without secret type
 &test_success({
@@ -151,22 +124,7 @@ sub test_error {
     client_secret => q{bar},
     refresh_token => $auth_info->refresh_token,
 }, {
-    token         => q{access_token_1},
+    token         => q{access_token_0},
     expires_in    => q{3600},
     refresh_token => q{refresh_token_0},
 });
-
-# secret type
-&test_success({
-    client_id     => q{foo},
-    client_secret => q{bar},
-    refresh_token => $auth_info->refresh_token,
-    secret_type   => q{hmac-sha256},
-}, {
-    token         => q{access_token_2},
-    secret        => q{access_token_secret_2},
-    secret_type   => q{hmac-sha256},
-    expires_in    => q{3600},
-    refresh_token => q{refresh_token_0},
-});
-

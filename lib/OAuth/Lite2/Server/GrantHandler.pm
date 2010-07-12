@@ -1,9 +1,7 @@
-package OAuth::Lite2::Server::Action::Token;
+package OAuth::Lite2::Server::GrantHandler;
 
 use strict;
 use warnings;
-
-use OAuth::Lite2::Error;
 
 sub new {
     my $class = shift;
@@ -12,7 +10,7 @@ sub new {
 
 sub handle_request {
     my ($self, $ctx) = @_;
-    OAuth::Lite2::Error::AbstractMethod->throw;
+    die "abstract method";
 }
 
 1;

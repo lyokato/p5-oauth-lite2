@@ -6,7 +6,7 @@ use warnings;
 use parent 'OAuth::Lite2::Formatter';
 use Try::Tiny;
 use XML::LibXML;
-use OAuth::Lite2::Error;
+use Carp ();
 
 sub name { "xml" }
 sub type { "application/xml" }
@@ -28,16 +28,9 @@ sub format {
 sub parse {
     my ($self, $xml) = @_;
     my $parser = XML::LibXML->new;
-    my $doc;
-    try {
-        $doc = $parser->parse_string($xml);
-    } catch {
-        OAuth::Lite2::Error::InvalidFormat->throw(
-            message => "Parse Error: " . $_);
-    };
+    my $doc = $parser->parse_string($xml);
     my $root = $doc->documentElement();
-    OAuth::Lite2::Error::InvalidFormat->throw(
-        message => "<OAuth/> Element not found: " . $xml)
+    Carp::croak "<OAuth/> Element not found: " . $xml
         unless $root->nodeName eq 'OAuth';
     my $hash = {};
     my @children = $root->childNodes();

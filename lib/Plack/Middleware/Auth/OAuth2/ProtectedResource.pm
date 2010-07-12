@@ -19,37 +19,35 @@ sub call {
 
         my $req = Plack::Request->new($env);
 
-        # from draft-v6, signature is not required, so always each connection
+        # after draft-v6, signature is not required, so always each connection
         # should be under TLS.
-        OAuth::Lite2::Error::InsecureBearerTokenRequest->throw
-            unless $req->secure;
+        warn "insecure barere token request" unless $req->secure;
 
         my $parser = OAuth::Lite2::ParamMethods->get_param_parser($req)
-            or OAuth::Lite2::Error->throw( message => q{This is not OAuth request.} );
+            or OAuth::Lite2::Error::InvalidRequest->throw;
 
-        # from draft-v6, params aren't required.
+        # after draft-v6, $params aren't required.
         my ($token, $params) = $parser->parse($req);
-        OAuth::Lite2::Error->throw( message => q{This is not OAuth request.} )
-            unless $token;
+        OAuth::Lite2::Error::InvalidRequest->throw unless $token;
 
         my $dh = $self->{data_handler}->new;
 
         my $access_token = $dh->get_access_token($token);
 
-        OAuth::Lite2::Error::TokenNotFound->throw
+        OAuth::Lite2::Error::InvalidToken->throw
             unless $access_token;
 
-        OAuth::Lite2::Error::TokenExpired->throw
+        OAuth::Lite2::Error::ExpiredToken->throw
             unless ($access_token->created_on + $access_token->expires_in > time());
 
         my $auth_info = $dh->get_auth_info_by_id($access_token->auth_id);
         # TODO validate auth_info
 
         $dh->validate_client_by_id($auth_info->client_id)
-            or OAuth::Lite2::Server::Error::InvalidClient->throw;
+            or OAuth::Lite2::Error::InvalidToken->throw;
 
         $dh->validate_user_by_id($auth_info->user_id)
-            or OAuth::Lite2::Server::Error::InvalidUser->throw;
+            or OAuth::Lite2::Error::InvalidToken->throw;
 
         $env->{REMOTE_USER}    = $auth_info->user_id;
         $env->{X_OAUTH_CLIENT} = $auth_info->client_id;
@@ -61,13 +59,24 @@ sub call {
 
         if ($_->isa("OAuth::Lite2::Error")) {
 
-            return [ 401, [ "WWW-Authenticate" =>
-                sprintf("Token error='%s'", $_->message ) ], [  ] ];
+            my @params;
+            push(@params, sprintf(q{realm='%s'}, $self->{realm}))
+                if $self->{realm};
+            push(@params, sprintf(q{error='%s'}, $_->type));
+            push(@params, sprintf(q{error-desc='%s'}, $_->description))
+                if $_->description;
+            push(@params, sprintf(q{error-uri='%s'}, $_->uri))
+                if $_->uri;
+            # push(@params, sprintf(q{scope='%s'}, $_->scope))
+            #     if $_->scope;
+
+            return [ $_->code, [ "WWW-Authenticate" =>
+                join(', ', @params) ], [  ] ];
 
         } else {
 
-            # Internal Server Error
-            return [ 500, [ ], [  ] ];
+            # rethrow
+            die $_;
 
         }
 

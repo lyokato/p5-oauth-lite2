@@ -11,11 +11,10 @@ use Plack::Request;
 use Try::Tiny;
 use Params::Validate;
 
-use OAuth::Lite2::Server::Action::Token::Refresh;
-use OAuth::Lite2::Server::Flows;
 use OAuth::Lite2::Server::Context;
 use OAuth::Lite2::Formatters;
-use OAuth::Lite2::Error;
+use OAuth::Lite2::Server::Error;
+use OAuth::Lite2::Server::GrantHandlers;
 
 sub new {
     my $class = shift;
@@ -23,34 +22,28 @@ sub new {
         data_handler => 1
     });
     my $self = bless {
-        flow_actions => {},
-        data_handler => $args{data_handler},
+        data_handler   => $args{data_handler},
+        grant_handlers => {},
     }, $class;
-    $self->{flow_actions}{refresh} =
-        OAuth::Lite2::Server::Action::Token::Refresh->new;
     return $self;
+}
+
+sub support_grant_type {
+    my ($self, $type) = @_;
+    my $handler = OAuth::Lite2::Server::GrantHandlers->get_handler($type)
+        or OAuth::Lite2::Server::Error::UnsupportedGrantType->throw;
+    $self->{grant_handlers}{$type} = $handler;
+}
+
+sub support_grant_types {
+    my $self = shift;
+    $self->support_grant_type($_) for @_;
 }
 
 sub data_handler {
     my ($self, $handler) = @_;
     $self->{data_handler} = $handler if $handler;
     $self->{data_handler};
-}
-
-sub support_flow {
-    my ($self, $flow_name) = @_;
-    my $flow = OAuth::Lite2::Server::Flows->get_flow($flow_name);
-    return unless $flow;
-    my $actions = $flow->token_endpoint_actions;
-    for my $action_name ( @$actions ) {
-        $self->{flow_actions}{$action_name} =
-            $flow->get_token_endpoint_action($action_name);
-    }
-}
-
-sub support_flows {
-    my ($self, @flow_names) = @_;
-    $self->support_flow($_) for @flow_names;
 }
 
 sub psgi_app {
@@ -81,36 +74,43 @@ sub compile_psgi_app {
 sub handle_request {
     my ($self, $request) = @_;
 
-    # TODO change to user Accept header
-    my $format = $request->param("format") || "json";
+    # from draft-v8, format is specified to JSON only.
+    my $format = "json";
+    # my $format = $request->param("format") || "json";
     my $formatter = OAuth::Lite2::Formatters->get_formatter_by_name($format)
         || OAuth::Lite2::Formatters->get_formatter_by_name("json");
 
     my $res = try {
 
-        my $type = $request->param("type");
+        my $type = $request->param("grant_type")
+            or OAuth::Lite2::Server::Error::InvalidRequest->throw(
+                description => q{'grant_type' not found},
+            );
 
-        OAuth::Lite2::Error::Server::MissingParam->throw(
-            message => "'type' not found"
-        ) unless $type;
+        my $handler = $self->{grant_handlers}{$type}
+            or OAuth::Lite2::Server::Error::UnsupportedGrantType->throw;
 
         my $data_handler = $self->{data_handler}->new;
+
+        my $client_id = $request->param("client_id")
+            or OAuth::Lite2::Server::Error::InvalidRequest->throw(
+                description => q{'client_id' not found},
+            );
+
+        my $client_secret = $request->param("client_secret")
+            or OAuth::Lite2::Server::Error::InvalidRequest->throw(
+                description => q{'client_secret' not found},
+            );
+
+        $data_handler->validate_client($client_id, $client_secret, $type)
+            or OAuth::Lite2::Server::Error::InvalidClientCredentials->throw;
 
         my $ctx = OAuth::Lite2::Server::Context->new({
             request      => $request,
             data_handler => $data_handler,
         });
 
-        my $action = $self->{flow_actions}{$type};
-        OAuth::Lite2::Error::Server::UnsupportedType->throw(
-            message => sprintf(q{unsupported type, "%s"}, $type) )
-            unless $action;
-
-        # TODO:
-        # $data_handler->validate_client_action($type, $request->param("client_id"))
-        #     or OAuth::Lite2::Error::Server::InvalidClientAction->throw;
-
-        my $result = $action->handle_request($ctx);
+        my $result = $handler->handle_request($ctx);
 
         return $request->new_response(200,
             [ "Content-Type"  => $formatter->type,
@@ -119,12 +119,18 @@ sub handle_request {
 
     } catch {
 
-        if ($_->isa("OAuth::Lite2::Error::Server")) {
+        if ($_->isa("OAuth::Lite2::Server::Error")) {
 
-            return $request->new_response(401,
+            my $error_params = { error => $_->type };
+            $error_params->{error_description} = $_->description
+                if $_->description;
+            $error_params->{error_uri} = $_->uri
+                if $_->uri;
+
+            return $request->new_response($_->code,
                 [ "Content-Type"  => $formatter->type,
                   "Cache-Control" => "no-store"  ],
-                [ $formatter->format({ error => $_->message }) ]);
+                [ $formatter->format($error_params) ]);
 
         } else {
 

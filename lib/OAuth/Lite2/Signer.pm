@@ -6,9 +6,9 @@ use warnings;
 use MIME::Base64 qw(encode_base64);
 use String::Random;
 use URI;
+use Carp ();
 use Params::Validate;
 
-use OAuth::Lite2::Error;
 use OAuth::Lite2::Signer::Algorithms;
 
 sub sign {
@@ -24,7 +24,7 @@ sub sign {
     });
 
     my $uri = URI->new($args{url});
-    OAuth::Lite2::Error::InvalidURIScheme->throw
+    Carp::croak "invalid uri scheme: " . $args{url}
         unless ($uri->scheme eq 'http' || $uri->scheme eq 'https');
 
     my $params = {
@@ -42,8 +42,7 @@ sub sign {
 
     my $algorithm =
         OAuth::Lite2::Signer::Algorithms->get_algorithm(lc $args{algorithm})
-            or OAuth::Lite2::Error::UnsupportedAlgorithm->throw(
-                message => sprintf(q{Unsupported algorithm: %s}, $args{algorithm}));
+            or Carp::croak "Unsupported algorithm: " . $args{algorithm};
 
     my $signature = encode_base64($algorithm->hash($args{secret}, $string));
     chomp $signature;
@@ -106,7 +105,7 @@ sub verify {
 
     my $algorithm =
         OAuth::Lite2::Signer::Algorithms->get_algorithm($args{algorithm})
-            or OAuth::Lite2::Error::UnsupportedAlgorithm->throw($args{algorithm});
+            or return 0;
 
     my $signature = encode_base64($algorithm->hash($args{secret}, $string));
     chomp $signature;

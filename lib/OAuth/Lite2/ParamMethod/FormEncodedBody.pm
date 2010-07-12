@@ -6,9 +6,9 @@ use warnings;
 use parent 'OAuth::Lite2::ParamMethod';
 use HTTP::Request;
 use HTTP::Headers;
+use Carp ();
 use bytes ();
 use Params::Validate;
-use OAuth::Lite2::Error;
 use OAuth::Lite2::Util qw(build_content);
 
 sub match {
@@ -42,11 +42,8 @@ sub build_request {
     });
     my $method = uc $args{method};
     if ($method eq 'GET' || $method eq 'DELETE') {
-        OAuth::Lite2::Error::InvalidParamMethod->throw(
-            message =>
-                 qq{When you request with GET or DELETE method, }
-                .qq{You can't use FormEncodedBody type OAuth parameters.}
-        );
+        Carp::croak qq{When you request with GET or DELETE method, }
+                   .qq{You can't use FormEncodedBody type OAuth parameters.}
     } else {
 
         my $oauth_params = $args{oauth_params} || {};
@@ -70,11 +67,8 @@ sub build_request {
         my $content_type = $headers->header("Content-Type");
         my $params  = $args{params} || {};
         if ($content_type ne "application/x-www-form-urlencoded") {
-            OAuth::Lite2::Error::InvalidParamMethod->throw(
-                message =>
-                     qq{When you use FormEncodedBody-type OAuth parameters,}
-                    .qq{Content-Type header must be application/x-www-form-urlencoded.}
-            );
+            Carp::croak qq{When you use FormEncodedBody-type OAuth parameters,}
+                       .qq{Content-Type header must be application/x-www-form-urlencoded.}
         }
         my $content = build_content({%$params, %$oauth_params});
         $headers->header("Content-Length", bytes::length($content));

@@ -3,21 +3,20 @@ package OAuth::Lite2::Formatter;
 use strict;
 use warnings;
 
-use OAuth::Lite2::Error;
 
 sub new { bless {}, $_[0] }
 
-sub name { OAuth::Lite2::Error::AbstractMethod->throw }
-sub type { OAuth::Lite2::Error::AbstractMethod->throw }
+sub name { die "abstract method" }
+sub type { die "abstract method" }
 
 sub format {
     my ($self, $hash) = @_;
-    OAuth::Lite2::Error::AbstractMethod->throw;
+    die "abstract method";
 }
 
 sub parse {
     my ($self, $content) = @_;
-    OAuth::Lite2::Error::AbstractMethod->throw;
+    die "abstract method";
 }
 
 1;

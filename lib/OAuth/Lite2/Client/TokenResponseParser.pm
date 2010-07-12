@@ -5,7 +5,7 @@ use warnings;
 
 use Try::Tiny;
 use OAuth::Lite2::Formatters;
-use OAuth::Lite2::Error;
+use OAuth::Lite2::Client::Error;
 use OAuth::Lite2::Client::Token;
 
 sub new {
@@ -23,14 +23,20 @@ sub parse {
 
     if ($http_res->is_success) {
 
-        OAuth::Lite2::Error::InvalidFormat->throw(
-            message => sprintf(q{Invalid content type "%s"},
+        OAuth::Lite2::Client::Error::InvalidResponse->throw(
+            message => sprintf(q{Invalid response content-type: %s},
                 $http_res->content_type||'')
         ) unless $formatter;
 
-        my $result = $formatter->parse($http_res->content);
+        my $result = try {
+            return $formatter->parse($http_res->content);
+        } catch {
+            OAuth::Lite2::Client::Error::InvalidResponse->throw(
+                message => sprintf(q{Invalid response format: %s}, $_),
+            ) 
+        };
 
-        OAuth::Lite2::Error::InvalidResponse->throw(
+        OAuth::Lite2::Client::Error::InvalidResponse->throw(
             message => sprintf("Response doesn't include 'access_token'")
         ) unless exists $result->{access_token};
 
@@ -46,7 +52,7 @@ sub parse {
                     if exists $result->{error};
             } catch { return };
         }
-        OAuth::Lite2::Error::InvalidResponse->throw( message => $errmsg );
+        OAuth::Lite2::Client::Error::InvalidResponse->throw( message => $errmsg );
     }
     return $token;
 }

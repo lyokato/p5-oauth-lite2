@@ -2,17 +2,18 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use Test::More tests => 16;
+use Test::More tests => 10;
 
 use Plack::Request;
 use Try::Tiny;
 use TestDataHandler;
 use OAuth::Lite2::Server::Context;
-use OAuth::Lite2::Server::Action::Token::ClientCredentials;
+use OAuth::Lite2::Server::GrantHandler::BasicCredentials;
 use OAuth::Lite2::Util qw(build_content);
 
 TestDataHandler->clear;
 TestDataHandler->add_client(id => q{foo}, secret => q{bar});
+TestDataHandler->add_user(username => q{user_1}, password => q{pass_1});
 my $dh = TestDataHandler->new;
 
 my $auth_info = $dh->create_or_update_auth_info(
@@ -23,7 +24,7 @@ my $auth_info = $dh->create_or_update_auth_info(
 
 is($auth_info->refresh_token, "refresh_token_0");
 
-my $action = OAuth::Lite2::Server::Action::Token::ClientCredentials->new;
+my $action = OAuth::Lite2::Server::GrantHandler::BasicCredentials->new;
 
 sub test_success {
     my $params = shift;
@@ -41,7 +42,7 @@ sub test_success {
         $res = $action->handle_request($ctx);
     } catch {
         my $error_message = ($_->isa("OAuth::Lite2::Error"))
-            ? $_->message : $_;
+            ? $_->type : $_;
     };
 
     if(exists $expected->{token}) {
@@ -92,62 +93,58 @@ sub test_error {
         my $res = $action->handle_request($ctx);
     } catch {
         $error_message = ($_->isa("OAuth::Lite2::Error"))
-            ? $_->message : $_;
+            ? $_->type : $_;
     };
 
     like($error_message, qr/$message/);
 }
 
-# no client id
-&test_error({
-    client_secret => q{bar},
-}, q{'client_id' not found});
-
-# no client secret
+# no username
 &test_error({
     client_id     => q{foo},
-}, q{'client_secret' not found});
+    client_secret => q{bar},
+    password      => q{pass_1},
+}, q{invalid-request});
+
+# no password
+&test_error({
+    client_id     => q{foo},
+    client_secret => q{bar},
+    username      => q{user_1},
+}, q{invalid-request});
 
 # invalid client_id
-&test_error({
-    client_id     => q{unknown},
-    client_secret => q{bar},
-}, q{invalid_client});
+#&test_error({
+#    client_id     => q{unknown},
+#    client_secret => q{bar},
+#    username      => q{user_1},
+#    password      => q{pass_1},
+#}, q{invalid-client-id});
 
-# invalid client_secret
-&test_error({
-    client_id     => q{foo},
-    client_secret => q{unknown},
-}, q{invalid_client});
-
-# invalid secret type
+# invalid username
 &test_error({
     client_id     => q{foo},
     client_secret => q{bar},
-    secret_type   => q{hmac-sha1},
-}, q{unsupported_secret_type});
+    username      => q{unknown},
+    password      => q{pass_1},
+}, q{invalid-grant});
 
-# without secret type
+# invalid password
+&test_error({
+    client_id     => q{foo},
+    client_secret => q{bar},
+    username      => q{user_1},
+    password      => q{unknown},
+}, q{invalid-grant});
+
 &test_success({
     client_id     => q{foo},
     client_secret => q{bar},
+    username      => q{user_1},
+    password      => q{pass_1},
 }, {
-    token         => q{access_token_1},
+    token         => q{access_token_0},
     expires_in    => q{3600},
-    refresh_token => q{refresh_token_2},
+    refresh_token => q{refresh_token_1},
 });
 
-# secret type
-&test_success({
-    client_id     => q{foo},
-    client_secret => q{bar},
-    secret_type   => q{hmac-sha256},
-}, {
-    token         => q{access_token_2},
-    secret        => q{access_token_secret_2},
-    secret_type   => q{hmac-sha256},
-    expires_in    => q{3600},
-    refresh_token => q{refresh_token_3},
-});
-
-# TODO transaction?

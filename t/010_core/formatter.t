@@ -54,9 +54,9 @@ TEST_JSON: {
     try {
         $json->parse("invalid format");
     } catch {
-        $message = $_->message;
+        $message = $_;
     };
-    like($message, qr/^Parse Error:/);
+    like($message, qr/malformed JSON string/);
 };
 
 TEST_XML: {
@@ -75,9 +75,9 @@ TEST_XML: {
     try {
         $xml->parse("invalid format");
     } catch {
-        $message = $_->message;
+        $message = $_;
     };
-    like($message, qr/^Parse Error:/);
+    like($message, qr/parser error/);
 };
 
 TEST_FORM: {

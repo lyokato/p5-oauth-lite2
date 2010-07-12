@@ -248,7 +248,7 @@ TEST_FORM_BODY: {
         );
         return undef;
     } catch {
-        return $_->message;
+        return $_;
     };
     like($error, qr/FormEncodedBody/);
 
@@ -262,7 +262,7 @@ TEST_FORM_BODY: {
         );
         return undef;
     } catch {
-        return $_->message;
+        return $_;
     };
     like($error, qr/FormEncodedBody/);
 
@@ -278,7 +278,7 @@ TEST_FORM_BODY: {
         );
         return undef;
     } catch {
-        return $_->message;
+        return $_;
     };
     like($error, qr/FormEncodedBody/);
 

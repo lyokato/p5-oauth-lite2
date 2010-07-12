@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 49;
+use Test::More tests => 28;
 BEGIN {
     # core
     use_ok('OAuth::Lite2');
@@ -31,40 +31,16 @@ BEGIN {
     use_ok('OAuth::Lite2::Agent::PSGIMock');
 
     # client
-    use_ok('OAuth::Lite2::Client');
-    use_ok('OAuth::Lite2::Client::Token');
-    use_ok('OAuth::Lite2::Client::TokenResponseParser');
-    use_ok('OAuth::Lite2::Client::Code');
-    use_ok('OAuth::Lite2::Client::CodeResponseParser');
-
-    use_ok('OAuth::Lite2::Client::ClientCredentials');
-    use_ok('OAuth::Lite2::Client::UserAgent');
-    use_ok('OAuth::Lite2::Client::WebServer');
-    use_ok('OAuth::Lite2::Client::Device');
-    use_ok('OAuth::Lite2::Client::UsernameAndPassword');
 
     # server
     use_ok('OAuth::Lite2::Server::Context');
 
-    use_ok('OAuth::Lite2::Server::Action::Token');
-    use_ok('OAuth::Lite2::Server::Action::Token::ClientCredentials');
-    use_ok('OAuth::Lite2::Server::Action::Token::DeviceCode');
-    use_ok('OAuth::Lite2::Server::Action::Token::DeviceToken');
-    use_ok('OAuth::Lite2::Server::Action::Token::Refresh');
-    use_ok('OAuth::Lite2::Server::Action::Token::Username');
-    use_ok('OAuth::Lite2::Server::Action::Token::WebServer');
+    use_ok('OAuth::Lite2::Server::GrantHandlers');
+    use_ok('OAuth::Lite2::Server::GrantHandler::AuthorizationCode');
+    use_ok('OAuth::Lite2::Server::GrantHandler::BasicCredentials');
+    use_ok('OAuth::Lite2::Server::GrantHandler::RefreshToken');
 
     use_ok('OAuth::Lite2::Server::Endpoint::Token');
-    use_ok('OAuth::Lite2::Server::Endpoint::EndUser');
-    #use_ok('OAuth::Lite2::Server::Endpoint::ProtectedResource');
-
-    use_ok('OAuth::Lite2::Server::Flows');
-    use_ok('OAuth::Lite2::Server::Flow');
-    use_ok('OAuth::Lite2::Server::Flow::ClientCredentials');
-    use_ok('OAuth::Lite2::Server::Flow::Device');
-    use_ok('OAuth::Lite2::Server::Flow::UserAgent');
-    use_ok('OAuth::Lite2::Server::Flow::WebServer');
-    use_ok('OAuth::Lite2::Server::Flow::UsernameAndPassword');
 
     use_ok('Plack::Middleware::Auth::OAuth2::ProtectedResource');
 };

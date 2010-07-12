@@ -7,7 +7,6 @@ use parent 'OAuth::Lite2::Formatter';
 
 use JSON;
 use Try::Tiny;
-use OAuth::Lite2::Error;
 
 sub name { "json" }
 sub type { "application/json" };
@@ -19,11 +18,7 @@ sub format {
 
 sub parse {
     my ($self, $json) = @_;
-    return try { return JSON->new->decode($json) }
-        catch {
-            OAuth::Lite2::Error::InvalidFormat->throw(
-                message => "Parse Error: " . $_);
-        };
+    return JSON->new->decode($json);
 }
 
 1;
