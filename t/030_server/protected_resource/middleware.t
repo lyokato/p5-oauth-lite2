@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More tests => 14;
 
 use TestPR;
 use TestDataHandler;
@@ -109,3 +109,9 @@ $res = &request($req);
 ok(!$res->is_success, 'request should fail');
 is($res->code, 401, 'invalid client');
 is($res->header("WWW-Authenticate"), q{OAuth realm='resource.example.org', error='invalid_token'}, 'invalid client');
+
+$req = HTTP::Request->new("GET" => q{http://example.org/});
+$req->header("Authorization" => sprintf(q{OAuth %s}, $access_token->token));
+$res = &request($req);
+ok($res->is_success, 'request should not fail');
+is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
