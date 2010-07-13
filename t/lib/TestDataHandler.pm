@@ -103,6 +103,11 @@ sub get_auth_info_by_refresh_token {
     return;
 }
 
+sub get_auth_info_by_id {
+    my ($self, $auth_id) = @_;
+    return $AUTH_INFO{$auth_id};
+}
+
 # called in following flows:
 #   - device_token
 sub get_auth_info_by_code {
@@ -155,7 +160,7 @@ sub create_or_update_access_token {
     my %attrs = (
         auth_id    => $auth_id,
         token      => $token,
-        expires_in => 3600,
+        expires_in => $params{expires_in} || 3600,
         created_on => time(),
     );
 
@@ -173,6 +178,17 @@ sub create_or_update_access_token {
     return $access_token;
 }
 
+sub get_access_token {
+    my ($self, $token) = @_;
+    for my $auth_id ( keys %ACCESS_TOKEN ) {
+        my $t = $ACCESS_TOKEN{ $auth_id };
+        if ($t->token eq $token) {
+            return $t;
+        }
+    }
+    return;
+}
+
 sub validate_client {
     my ($self, $client_id, $client_secret, $type) = @_;
     return 0 unless exists $CLIENTS{ $client_id };
@@ -188,6 +204,16 @@ sub validate_client {
     } else {
         return 1;
     }
+}
+
+sub validate_client_by_id {
+    my ($self, $client_id) = @_;
+    return ($client_id ne 'malformed');
+}
+
+sub validate_user_by_id {
+    my ($self, $user_id) = @_;
+    return ($user_id ne 666);
 }
 
 1;
