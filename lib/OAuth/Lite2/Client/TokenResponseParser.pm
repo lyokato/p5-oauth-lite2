@@ -33,7 +33,7 @@ sub parse {
         } catch {
             OAuth::Lite2::Client::Error::InvalidResponse->throw(
                 message => sprintf(q{Invalid response format: %s}, $_),
-            ) 
+            );
         };
 
         OAuth::Lite2::Client::Error::InvalidResponse->throw(

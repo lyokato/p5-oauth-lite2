@@ -20,6 +20,9 @@ OAuth 2.0 Library
 
 Client
 
+L<OAuth::Lite2::Client::WebServer>
+L<OAuth::Lite2::Client::UsernameAndPassword>
+
 Server
 
 L<OAuth::Lite2::Server::Endpoint::Token>
