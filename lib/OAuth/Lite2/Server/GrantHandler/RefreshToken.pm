@@ -45,4 +45,37 @@ sub handle_request {
     return $res;
 }
 
+=head1 NAME
+
+OAuth::Lite2::Server::GrantHandler::RefreshToken - handler for 'refresh-token' grant_type request
+
+=head1 SYNOPSIS
+
+    my $handler = OAuth::Lite2::Server::GrantHandler::RefreshToken->new;
+    my $res = $handler->handle_request( $ctx );
+
+=head1 DESCRIPTION
+
+handler for 'refresh-token' grant_type request.
+
+=head1 METHODS
+
+=head2 handle_request( $req )
+
+See L<OAuth::Lite2::Server::GrantHandler> document.
+
+=head1 AUTHOR
+
+Lyo Kato, E<lt>lyo.kato@gmail.comE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Lyo Kato
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
+at your option, any later version of Perl 5 you may have available.
+
+=cut
+
 1;

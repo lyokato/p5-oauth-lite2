@@ -141,4 +141,96 @@ sub handle_request {
     };
 }
 
+=head1 NAME
+
+OAuth::Lite2::Server::Endpoint::Token - token endpoint PSGI application
+
+=head1 SYNOPSIS
+
+token_endpoint.psgi
+
+    use strict;
+    use warnings;
+    use Plack::Builder;
+    use OAuth::Lite2::Server::Endpoint::Token;
+    use MyDataHandlerClass;
+
+    builder {
+        my $app = OAuth::Lite2::Server::Endpoint::Token->new(
+            data_handler => 'MyDataHandlerClass',
+        );
+        $app->support_grant_types(qw(authorization-code refresh-token));
+        $app;
+    };
+
+=head1 DESCRIPTION
+
+The object of this class behaves as PSGI application (subroutine reference).
+This is for OAuth 2.0 token-endpoint.
+
+At first you have to make your custom class inheriting L<OAuth::Lite2::Server::DataHandler>,
+and setup PSGI file with it.
+
+=head1 METHODS
+
+=head2 new( %params )
+
+=over 4
+
+=item data_handler
+
+name of your custom class that inherits L<OAuth::Lite2::Server::DataHandler>
+and implements interface.
+
+=back
+
+=head2 support_grant_type( $type )
+
+=head2 support_grant_types( @types )
+
+You can set 'authorization-code', 'password', or 'refresh-token'
+
+=head2 data_handler
+
+=head2 psgi_app
+
+=head2 compile_psgi_app
+
+=head2 handle_request( $req )
+
+=head1 TEST
+
+You can test with L<OAuth::Lite2::Agent::PSGIMock> and some of client classes.
+
+    my $app = OAuth::Lite2::Server::Endpoint::Token->new(
+        data_handler => 'MyDataHandlerClass',
+    );
+    $app->support_grant_types(qw(authorization-code refresh-token));
+    my $mock_agent = OAuth::Lite2::Agent::PSGIMock->new(app => $app);
+    my $client = OAuth::Lite2::Client::UsernameAndPassword->new(
+        id     => q{my_client_id},
+        secret => q{my_client_secret},
+        agent  => $mock_agent,
+    );
+    my $token = $client->get_access_token(
+        username => q{foo},
+        password => q{bar},
+    );
+    ok($token);
+    is($token->access_token, q{access_token_value});
+
+=head1 AUTHOR
+
+Lyo Kato, E<lt>lyo.kato@gmail.comE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2010 by Lyo Kato
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
+at your option, any later version of Perl 5 you may have available.
+
+=cut
+
 1;
