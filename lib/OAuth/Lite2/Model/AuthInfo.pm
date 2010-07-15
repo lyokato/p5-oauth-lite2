@@ -16,6 +16,24 @@ __PACKAGE__->mk_accessors(qw(
     redirect_uri
 ));
 
+use Params::Validate;
+
+sub new {
+    my $class = shift;
+    my @args = @_ == 1 ? %{$_[0]} : @_;
+    my %params = Params::Validate::validate(@args, {
+        id            => 1,
+        user_id       => 1,
+        client_id     => 1,
+        scope         => { optional => 1 },
+        refresh_token => { optional => 1 },
+        code          => { optional => 1 },
+        redirect_uri  => { optional => 1 },
+    });
+    my $self = bless \%params, $class;
+    return $self;
+}
+
 =head1 NAME
 
 OAuth::Lite2::Model::AuthInfo - model class that represents authorization info.

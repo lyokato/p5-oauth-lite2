@@ -5,6 +5,7 @@ use warnings;
 
 use parent 'OAuth::Lite2::Server::GrantHandler';
 use OAuth::Lite2::Server::Error;
+use Carp ();
 
 sub handle_request {
     my ($self, $ctx) = @_;
@@ -26,8 +27,10 @@ sub handle_request {
 
     my $auth_info = $dh->get_auth_info_by_code($code)
         or OAuth::Lite2::Server::Error::InvalidGrant->throw;
-    # TODO check returned $auth_info
-    #unless ($auth_info && ref($auth_info) eq '')
+
+    Carp::croak "OAuth::Lite2::Server::DataHandler::get_auth_info_by_code doesn't return OAuth::Lite2::Model::AuthInfo"
+        unless ($auth_info
+            && $auth_info->isa("OAuth::Lite2::Model::AuthInfo"));
 
     OAuth::Lite2::Server::Error::InvalidClient->throw
         unless ($auth_info->client_id eq $client_id);
@@ -39,7 +42,9 @@ sub handle_request {
     my $access_token = $dh->create_or_update_access_token(
         auth_info => $auth_info,
     );
-    # TODO check returned $access_token?
+    Carp::croak "OAuth::Lite2::Server::DataHandler::create_or_update_access_token doesn't return OAuth::Lite2::Model::AccessToken"
+        unless ($access_token
+            && $access_token->isa("OAuth::Lite2::Model::AccessToken"));
 
     my $res = {
         access_token => $access_token->token,

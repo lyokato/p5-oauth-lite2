@@ -5,6 +5,7 @@ use warnings;
 
 use parent 'OAuth::Lite2::Server::GrantHandler';
 use OAuth::Lite2::Server::Error;
+use Carp ();
 
 sub handle_request {
     my ($self, $ctx) = @_;
@@ -34,12 +35,16 @@ sub handle_request {
         user_id   => $user_id,
         scope     => $scope,
     );
-    # TODO check $auth_info
+    Carp::croak "OAuth::Lite2::Server::DataHandler::create_or_update_auth_info doesn't return OAuth::Lite2::Model::AuthInfo"
+        unless ($auth_info
+            && $auth_info->isa("OAuth::Lite2::Model::AuthInfo"));
 
     my $access_token = $dh->create_or_update_access_token(
         auth_info => $auth_info,
     );
-    # TODO check $access_token
+    Carp::croak "OAuth::Lite2::Server::DataHandler::create_or_update_access_token doesn't return OAuth::Lite2::Model::AccessToken"
+        unless ($access_token
+            && $access_token->isa("OAuth::Lite2::Model::AccessToken"));
 
     my $res = {
         access_token => $access_token->token,
