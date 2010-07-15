@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use parent 'OAuth::Lite2::Agent';
-use OAuth::Lite2::Error;
+use OAuth::Lite2::Client::Error;
 
 =head1 NAME
 
@@ -37,8 +37,8 @@ and if it fails, it throws the exception.
 sub request {
     my ($self, $req) = @_;
 
-    OAuth::Lite2::Error::InsecureRequest->throw(
-        sprintf q{request url should start with https, but found "%s"}, $req->uri)
+    OAuth::Lite2::Client::Error::InsecureRequest->throw(
+        message => sprintf q{request url should start with https, but found "%s"}, $req->uri)
         unless $req->uri =~ /^https/;
 
     local $ENV{HTTPS_DEBUG}          = $self->{https_debug}          if $self->{https_debug};
@@ -53,8 +53,8 @@ sub request {
 
     my $res = $self->SUPER::request($req);
 
-    OAuth::Lite2::Error::InsecureResponse->throw(
-        "SSL Warning: Unauthorized access to blocked host"
+    OAuth::Lite2::Client::Error::InsecureResponse->throw(
+        message => "SSL Warning: Unauthorized access to blocked host"
     ) if $res->header('Client-SSL-Warning');
 
     return $res;
