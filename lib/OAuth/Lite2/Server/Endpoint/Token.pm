@@ -19,10 +19,12 @@ use OAuth::Lite2::Server::GrantHandlers;
 sub new {
     my $class = shift;
     my %args = Params::Validate::validate(@_, {
-        data_handler => 1
+        data_handler => 1,
+        error_uri    => { optional => 1 },
     });
     my $self = bless {
         data_handler   => $args{data_handler},
+        error_uri      => $args{error_uri},
         grant_handlers => {},
     }, $class;
     return $self;
@@ -124,8 +126,8 @@ sub handle_request {
             my $error_params = { error => $_->type };
             $error_params->{error_description} = $_->description
                 if $_->description;
-            $error_params->{error_uri} = $_->uri
-                if $_->uri;
+            $error_params->{error_uri} = $self->{error_uri}
+                if $self->{error_uri};
 
             return $request->new_response($_->code,
                 [ "Content-Type"  => $formatter->type,
@@ -181,6 +183,11 @@ and setup PSGI file with it.
 
 name of your custom class that inherits L<OAuth::Lite2::Server::DataHandler>
 and implements interface.
+
+=item error_uri
+
+Optional. URI that represents error description page.
+This would be included in error responses.
 
 =back
 

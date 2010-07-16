@@ -6,7 +6,7 @@ use warnings;
 use parent 'Plack::Middleware';
 
 use Plack::Request;
-use Plack::Util::Accessor qw(realm data_handler);
+use Plack::Util::Accessor qw(realm data_handler error_uri);
 use Try::Tiny;
 use Carp ();
 
@@ -74,8 +74,8 @@ sub call {
             push(@params, sprintf(q{error='%s'}, $_->type));
             push(@params, sprintf(q{error-desc='%s'}, $_->description))
                 if $_->description;
-            push(@params, sprintf(q{error-uri='%s'}, $_->uri))
-                if $_->uri;
+            push(@params, sprintf(q{error-uri='%s'}, $self->{error_uri}))
+                if $self->{error_uri};
             # push(@params, sprintf(q{scope='%s'}, $_->scope))
             #     if $_->scope;
 
@@ -103,7 +103,8 @@ Plack::Middleware::Auth::OAuth2::ProtectedResource - middleware for OAuth 2.0 Pr
     my $app = sub {...};
     builder {
         enable "Plack::Middleware::OAuth2::ProtectedResource",
-            data_handler => "YourApp::DataHandler";
+            data_handler => "YourApp::DataHandler",
+            error_uri    => q{http://example.org/error/description};
         enable "Plack::Middleware::JSONP";
         enable "Plack::Middleware::ContentLength";
         $app;

@@ -21,7 +21,6 @@ OAuth::Lite2::Server::Error - OAuth 2.0 server errors
 
             OAuth::Lite2::Server::Error::InvalidRequest->throw(
                 description => q{Something wrong},
-                # uri       => q{http://example.org/error/description},
                 # state     => q{foo},
             );
         }
@@ -34,7 +33,6 @@ OAuth::Lite2::Server::Error - OAuth 2.0 server errors
 
             my %error_params = ( error => $_->type );
             $error_params{error_description} = $_->description if $_->description;
-            $error_params{uri} = $_->uri if $_->uri;
             $error_params{state} = $_->state if $_->state;
 
             $uri->query_form(%error_params);
@@ -60,7 +58,6 @@ OAuth::Lite2::Server::Error - OAuth 2.0 server errors
 
             my %error_params = ( error => $_->type );
             $error_params{error_description} = $_->description if $_->description;
-            $error_params{error_uri} = $_->uri if $_->uri;
             $error_params{scope} = $_->scope if $_->scope;
 
             $req->new_response($_->code,
@@ -122,7 +119,6 @@ sub new {
     my ($class, %args) = @_;
     bless {
         description => $args{description} || '',
-        uri         => $args{uri}         || '',
         state       => $args{state}       || '',
         code        => $args{code}        || 400,
     }, $class;
@@ -136,7 +132,6 @@ sub throw {
 sub code        { $_[0]->{code}         }
 sub type        { die "abstract method" }
 sub description { $_[0]->{description}  }
-sub uri         { $_[0]->{uri}          }
 sub state       { $_[0]->{state}        }
 
 # OAuth Server Error
