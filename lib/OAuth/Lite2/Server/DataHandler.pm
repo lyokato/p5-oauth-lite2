@@ -83,6 +83,106 @@ sub get_auth_info_by_id {
     die "abstract method";
 }
 
+=head1 NAME
+
+OAuth::Lite2::Server::DataHandler - Base class that specifies interface for data handler for your service.
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+This specifies interface to handle data stored on your application.
+You have to inherit this, and implements subroutines according to the interface contract.
+This is proxy or adapter that connects OAuth::Lite2 library to your service.
+
+=head1 METHODS
+
+=head2 init
+
+If your subclass need some initiation, implement in this method.
+
+=head1 INTERFACES
+
+=head2 validate_client( $client_id, $client_secret, $grant_type )
+
+This interface is used on Token Endpoint.
+In spite of grant_type, all the time this method is called.
+
+You can check here the client_id is valid? and client credentials is not invalid?
+And the client is allowed to use this grant_type?
+
+If it's OK, return 1. Return 0 if not.
+
+=head2 get_user_id( $username, $password )
+
+This interface is used on Token Endpoint, when requested grant_type is 'password'.
+Username and password is passed. You check if the credentials is valid or not.
+And if it's OK, return the user's identifier that is managed on your service.
+
+=head2 create_or_update_auth_info( %params )
+
+Create and save new authorization info.
+Should return L<OAuth::Lite2::Model::AuthInfo> object.
+
+=head2 create_or_update_access_token( %params )
+
+Create and save new access token.
+Should return L<OAuth::Lite2::Model::AccessToken> object.
+
+=head2 get_auth_info_by_code( $code )
+
+This interface is used when client obtains access_token using authorization-code
+that would be issued by server with user's authorization.
+For instance, Web Server Profile requires this interface.
+
+Should return L<OAuth::Lite2::Model::AuthInfo> object.
+
+=head2 get_auth_info_by_refresh_token( $refresh_token )
+
+This interface is used when refresh access_token.
+
+Should return L<OAuth::Lite2::Model::AuthInfo> object.
+
+=head2 get_access_token( $token )
+
+This interface is used on protected resource endpoint.
+See L<Plack::Middleware::Auth::OAuth2::ProtectedResource>.
+get attributes that belongs to the token that is included
+HTTP request accesses to the endpoint.
+Should return L<OAuth::Lite2::Model::AccessToken> object.
+
+=head2 get_auth_info_by_id( $auth_id )
+
+This interface is used on protected resource endpoint.
+See L<Plack::Middleware::Auth::OAuth2::ProtectedResource>.
+This method is called after get_access_token method.
+get authorization-info that is related to the $auth_id
+that has relation with the access token.
+
+Should return L<OAuth::Lite2::Model::AuthInfo> object.
+
+=head2 validate_client_by_id( $client_id )
+
+This fook is called on protected resource endpoint.
+See L<Plack::Middleware::Auth::OAuth2::ProtectedResource>.
+
+After checking if token is valid, furthermore you can check
+if the client related the token is valid in this method.
+
+If passed client_id is invalid for some reason, return 0.
+If OK, return 1.
+
+=head2 validate_user_by_id( $user_id )
+
+This fook is called on protected resource endpoint.
+See L<Plack::Middleware::Auth::OAuth2::ProtectedResource>.
+
+After checking if token is valid, furthermore you can check
+if the user related the token is valid in this method.
+
+If passed user_id is invalid for some reason, return 0.
+If OK, return 1.
+
 =head1 AUTHOR
 
 Lyo Kato, E<lt>lyo.kato@gmail.comE<gt>
