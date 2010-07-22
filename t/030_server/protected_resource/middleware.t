@@ -3,6 +3,7 @@ use warnings;
 
 use Test::More tests => 14;
 
+use lib 't/lib';
 use TestPR;
 use TestDataHandler;
 use Try::Tiny;

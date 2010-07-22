@@ -1,10 +1,9 @@
 use strict;
-use Test::More tests => 28;
+use Test::More tests => 33;
 BEGIN {
     # core
     use_ok('OAuth::Lite2');
 
-    use_ok('OAuth::Lite2::Error');
 
     use_ok('OAuth::Lite2::Formatters');
     use_ok('OAuth::Lite2::Formatter');
@@ -31,8 +30,15 @@ BEGIN {
     use_ok('OAuth::Lite2::Agent::PSGIMock');
 
     # client
+    use_ok('OAuth::Lite2::Client::Error');
+    use_ok('OAuth::Lite2::Client::Token');
+    use_ok('OAuth::Lite2::Client::TokenResponseParser');
+    use_ok('OAuth::Lite2::Client::WebServer');
+    use_ok('OAuth::Lite2::Client::UsernameAndPassword');
 
     # server
+    use_ok('OAuth::Lite2::Server::Error');
+
     use_ok('OAuth::Lite2::Server::Context');
 
     use_ok('OAuth::Lite2::Server::GrantHandlers');
