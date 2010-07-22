@@ -7,7 +7,7 @@ name 'OAuth-Lite2';
 all_from 'lib/OAuth/Lite2.pm';
 
 requires(
-    'Parmas::Validate'    => 0,
+    'Params::Validate'    => 0,
     'LWP::UserAgent'      => 0,
     'Try::Tiny'           => 0,
     'Class::ErrorHandler' => 0,
