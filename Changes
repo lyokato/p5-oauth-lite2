@@ -1,4 +1,7 @@
 Revision history for Perl extension OAuth::Lite2.
 
+0.01_02  Tue Jul 27 09:27:00 2010
+    - fixed dependency setting in Makefile.PL
+
 0.01_01  Wed Jul 22 12:31:00 2010
     - initial release for draft-v10
