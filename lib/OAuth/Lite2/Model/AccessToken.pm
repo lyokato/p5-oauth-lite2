@@ -19,14 +19,18 @@ use Params::Validate;
 sub new {
     my $class = shift;
     my @args = @_ == 1 ? %{$_[0]} : @_;
-    my %params = Params::Validate::validate(@args, {
-        auth_id     => 1,
-        token       => 1,
-        expires_in  => { optional => 1 },
-        created_on  => { optional => 1 },
-        secret      => { optional => 1 },
-        secret_type => { optional => 1 },
-    });
+    my %params = Params::Validate::validate_with(
+        params => \@args, 
+        spec => {
+            auth_id     => 1,
+            token       => 1,
+            expires_in  => { optional => 1 },
+            created_on  => { optional => 1 },
+            secret      => { optional => 1 },
+            secret_type => { optional => 1 },
+        },
+        allow_extra => 1,
+    );
     my $self = bless \%params, $class;
     return $self;
 }

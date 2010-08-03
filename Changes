@@ -1,5 +1,8 @@
 Revision history for Perl extension OAuth::Lite2.
 
+0.01_03  Tue Aug 02 16:25:00 2010
+    - fixed model classes. changed setting for Params::Validatea
+
 0.01_02  Tue Jul 27 09:27:00 2010
     - fixed dependency setting in Makefile.PL
 

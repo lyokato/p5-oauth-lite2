@@ -21,15 +21,19 @@ use Params::Validate;
 sub new {
     my $class = shift;
     my @args = @_ == 1 ? %{$_[0]} : @_;
-    my %params = Params::Validate::validate(@args, {
-        id            => 1,
-        user_id       => 1,
-        client_id     => 1,
-        scope         => { optional => 1 },
-        refresh_token => { optional => 1 },
-        code          => { optional => 1 },
-        redirect_uri  => { optional => 1 },
-    });
+    my %params = Params::Validate::validate_with(
+        params => \@args,
+        spec => {
+            id            => 1,
+            user_id       => 1,
+            client_id     => 1,
+            scope         => { optional => 1 },
+            refresh_token => { optional => 1 },
+            code          => { optional => 1 },
+            redirect_uri  => { optional => 1 },
+        },
+        allow_extra => 1,
+    );
     my $self = bless \%params, $class;
     return $self;
 }
