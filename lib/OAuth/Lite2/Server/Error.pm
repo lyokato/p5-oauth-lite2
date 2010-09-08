@@ -187,10 +187,10 @@ our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
 sub type { "expired_token" }
 
-package OAuth::Lite2::Server::Error::InefficientScope;
+package OAuth::Lite2::Server::Error::InsufficientScope;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
-sub type { "inefficient_scope" }
+sub type { "insufficient_scope" }
 
 package OAuth::Lite2::Server::Error;
 

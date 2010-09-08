@@ -1,5 +1,8 @@
 Revision history for Perl extension OAuth::Lite2.
 
+0.01_04  Tue Sep 9 03:22:00 2010
+    - fixed exception: inefficient -> insufficient
+
 0.01_03  Tue Aug 02 16:25:00 2010
     - fixed model classes. changed setting for Params::Validatea
 
