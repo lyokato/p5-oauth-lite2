@@ -69,12 +69,12 @@ sub call {
         if ($_->isa("OAuth::Lite2::Server::Error")) {
 
             my @params;
-            push(@params, sprintf(q{realm='%s'}, $self->{realm}))
+            push(@params, sprintf(q{realm="%s"}, $self->{realm}))
                 if $self->{realm};
-            push(@params, sprintf(q{error='%s'}, $_->type));
-            push(@params, sprintf(q{error-desc='%s'}, $_->description))
+            push(@params, sprintf(q{error="%s"}, $_->type));
+            push(@params, sprintf(q{error_description="%s"}, $_->description))
                 if $_->description;
-            push(@params, sprintf(q{error-uri='%s'}, $self->{error_uri}))
+            push(@params, sprintf(q{error_uri="%s"}, $self->{error_uri}))
                 if $self->{error_uri};
             # push(@params, sprintf(q{scope='%s'}, $_->scope))
             #     if $_->scope;
