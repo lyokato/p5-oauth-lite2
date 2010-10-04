@@ -1,5 +1,8 @@
 Revision history for Perl extension OAuth::Lite2.
 
+0.01_05  Tue Oct 05 01:00:00 2010
+    - accepted pull request http://github.com/lyokato/p5-oauth-lite2/pull/1
+
 0.01_04  Tue Sep 9 03:22:00 2010
     - fixed exception: inefficient -> insufficient
 
