@@ -6,7 +6,7 @@ use warnings;
 use parent 'Plack::Middleware';
 
 use Plack::Request;
-use Plack::Util::Accessor qw(realm data_handler error_uri);
+use Plack::Util::Accessor qw(realm data_handler error_uri skip_require_secure);
 use Try::Tiny;
 use Carp ();
 
@@ -22,7 +22,7 @@ sub call {
 
         # after draft-v6, signature is not required, so always each connection
         # should be under TLS.
-        warn "insecure barere token request" unless $req->secure;
+        warn "insecure barere token request" if ($req->secure && !$self->{skip_require_secure});
 
         my $parser = OAuth::Lite2::ParamMethods->get_param_parser($req)
             or OAuth::Lite2::Server::Error::InvalidRequest->throw;
