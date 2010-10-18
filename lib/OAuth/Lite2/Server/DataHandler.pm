@@ -20,47 +20,49 @@ sub init {
 
 sub validate_client {
     my ($self, $client_id, $client_secret, $grant_type) = @_;
-    die "abstract method";
+    die "abstract method - validate_client";
     return 1;
 }
 
 sub get_user_id {
     my ($self, $username, $password) = @_;
-    die "abstract method";
+    die "abstract method - get_user_id";
 }
 
 sub create_or_update_auth_info {
-    my ($self, %args) = @_;
+    my $self = shift;
+    my (%args) = @_;
     Params::Validate::validate(@_, {
         client_id   => 1,
         user_id     => 1,
         scope       => { optional => 1 },
     });
-    die "abstract method";
+    die "abstract method - create_or_update_auth_info";
 }
 
 sub create_or_update_access_token {
-    my ($self, %args) = @_;
+    my $self = shift;
+    my (%args) = @_;
     Params::Validate::validate(@_, {
         auth_info   => 1,
         # secret_type => 1,
     });
-    die "abstract method";
+    die "abstract method - create_or_update_access_token";
 }
 
 sub get_auth_info_by_code {
     my ($self, $code) = @_;
-    die "abstract method";
+    die "abstract method - get_auth_info_by_code";
 }
 
 sub get_auth_info_by_refresh_token {
     my ($self, $refresh_token) = @_;
-    die "abstract method";
+    die "abstract method - get_auth_info_by_refresh_token";
 }
 
 sub get_client_user_id {
     my ($self, $client_id, $client_secret) = @_;
-    die "abstract method";
+    die "abstract method - get_client_user_id";
 }
 
 sub validate_client_by_id {
@@ -75,12 +77,12 @@ sub validate_user_by_id {
 
 sub get_access_token {
     my ($self, $token) = @_;
-    die "abstract method";
+    die "abstract method - get_access_token";
 }
 
 sub get_auth_info_by_id {
     my ($self, $id) = @_;
-    die "abstract method";
+    die "abstract method - get_auth_info_by_id";
 }
 
 =head1 NAME
