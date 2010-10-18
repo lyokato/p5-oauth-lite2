@@ -33,7 +33,7 @@ sub new {
 sub support_grant_type {
     my ($self, $type) = @_;
     my $handler = OAuth::Lite2::Server::GrantHandlers->get_handler($type)
-        or OAuth::Lite2::Server::Error::UnsupportedGrantType->throw(description=>$type);
+        or OAuth::Lite2::Server::Error::UnsupportedGrantType->throw(type=>$type);
     $self->{grant_handlers}{$type} = $handler;
 }
 
@@ -90,7 +90,7 @@ sub handle_request {
             );
 
         my $handler = $self->{grant_handlers}{$type}
-            or OAuth::Lite2::Server::Error::UnsupportedGrantType->throw;
+            or OAuth::Lite2::Server::Error::UnsupportedGrantType->throw(type=>$type);
 
         my $data_handler = $self->{data_handler}->new;
 

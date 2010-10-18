@@ -171,6 +171,7 @@ sub type { "invalid_grant" }
 package OAuth::Lite2::Server::Error::UnsupportedGrantType;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub type { "unsupported_grant_type" }
+sub description { "Unsupported grant type: " . $_[0]->{description} }
 
 package OAuth::Lite2::Server::Error::InvalidScope;
 our @ISA = qw(OAuth::Lite2::Server::Error);
