@@ -14,11 +14,11 @@ sub add_handler {
     $HANDLERS{$type} = $handler;
 }
 
-__PACKAGE__->add_handler( 'authorization_code' =>
+__PACKAGE__->add_handler( 'authorization-code' =>
     OAuth::Lite2::Server::GrantHandler::AuthorizationCode->new );
 __PACKAGE__->add_handler( 'password' =>
     OAuth::Lite2::Server::GrantHandler::Password->new );
-__PACKAGE__->add_handler( 'refresh_token' =>
+__PACKAGE__->add_handler( 'refresh-token' =>
     OAuth::Lite2::Server::GrantHandler::RefreshToken->new );
 
 #__PACKAGE__->add_handler( 'assertion' => );
