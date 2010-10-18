@@ -79,8 +79,11 @@ sub call {
             # push(@params, sprintf(q{scope='%s'}, $_->scope))
             #     if $_->scope;
 
-            return [ $_->code, [ "WWW-Authenticate" =>
-                "OAuth " . join(', ', @params) ], [  ] ];
+            return [
+                $_->code,
+                [ "WWW-Authenticate" =>"OAuth " . join(', ', @params) ], 
+                [ ] 
+           ];
 
         } else {
 
