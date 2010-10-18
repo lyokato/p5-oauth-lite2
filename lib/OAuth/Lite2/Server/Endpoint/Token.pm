@@ -33,7 +33,7 @@ sub new {
 sub support_grant_type {
     my ($self, $type) = @_;
     my $handler = OAuth::Lite2::Server::GrantHandlers->get_handler($type)
-        or OAuth::Lite2::Server::Error::UnsupportedGrantType->throw;
+        or OAuth::Lite2::Server::Error::UnsupportedGrantType->throw(description=>$type);
     $self->{grant_handlers}{$type} = $handler;
 }
 
@@ -128,7 +128,6 @@ sub handle_request {
                 if $_->description;
             $error_params->{error_uri} = $self->{error_uri}
                 if $self->{error_uri};
-
             return $request->new_response($_->code,
                 [ "Content-Type"  => $formatter->type,
                   "Cache-Control" => "no-store"  ],
