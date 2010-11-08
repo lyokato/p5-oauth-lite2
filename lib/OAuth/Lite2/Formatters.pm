@@ -6,6 +6,7 @@ use warnings;
 use OAuth::Lite2::Formatter::JSON;
 use OAuth::Lite2::Formatter::XML;
 use OAuth::Lite2::Formatter::FormURLEncoded;
+use OAuth::Lite2::Formatter::Text;
 
 my %FORMATTERS_BY_TYPE;
 my %FORMATTERS_BY_NAME;
@@ -19,6 +20,7 @@ sub add_formatter {
 __PACKAGE__->add_formatter( OAuth::Lite2::Formatter::JSON->new );
 __PACKAGE__->add_formatter( OAuth::Lite2::Formatter::XML->new );
 __PACKAGE__->add_formatter( OAuth::Lite2::Formatter::FormURLEncoded->new );
+__PACKAGE__->add_formatter( OAuth::Lite2::Formatter::Text->new );
 
 sub get_formatter_by_name {
     my ($class, $name) = @_;
