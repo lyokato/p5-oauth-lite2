@@ -25,6 +25,7 @@ lib/OAuth/Lite2/Formatter.pm
 lib/OAuth/Lite2/Formatter/FormURLEncoded.pm
 lib/OAuth/Lite2/Formatter/JSON.pm
 lib/OAuth/Lite2/Formatter/XML.pm
+lib/OAuth/Lite2/Formatter/Text.pm
 lib/OAuth/Lite2/Formatters.pm
 lib/OAuth/Lite2/Model/AccessToken.pm
 lib/OAuth/Lite2/Model/AuthInfo.pm
