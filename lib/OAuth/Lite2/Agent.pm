@@ -7,11 +7,11 @@ use LWP::UserAgent;
 
 =head1 NAME
 
-OAuth::Lite2::Clinet::Agent - Base class of preset-agents.
+OAuth::Lite2::Client::Agent - Base class of preset-agents.
 
 =head1 SYNOPSIS
 
-    my $agent = OAuth::Lite2::Clinet::Agent->new;
+    my $agent = OAuth::Lite2::Client::Agent->new;
     my $res = $agent->request( $req );
 
 =head1 DESCRIPTION
@@ -37,7 +37,7 @@ sub new {
         $self->{agent}->agent(
             join "/",
                 __PACKAGE__,
-                $OAuth::Lite2::Clinet::VERSION
+                $OAuth::Lite2::Client::VERSION
         );
     }
     return $self;
