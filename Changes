@@ -1,5 +1,10 @@
 Revision history for Perl extension OAuth::Lite2.
 
+0.01_07  Tue Jan 04 10:40:00 2010
+    - added last_request/last_response on clients to access
+      HTTP::Request/HTTP::Response internally used.
+      https://github.com/lyokato/p5-oauth-lite2/issues#issue/4
+
 0.01_06  Tue Nov 10 00:12:00 2010
     - accepted pull request http://github.com/lyokato/p5-oauth-lite2/pull/3 
 

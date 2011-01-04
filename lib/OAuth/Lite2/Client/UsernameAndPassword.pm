@@ -138,6 +138,8 @@ sub new {
         secret            => undef,
         access_token_uri  => undef,
         refresh_token_uri => undef,
+        last_request      => undef,
+        last_response     => undef,
         %args,
     }, $class;
 
@@ -208,6 +210,8 @@ sub get_access_token {
     my $req = HTTP::Request->new( POST => $args{uri}, $headers, $content );
 
     my $res = $self->{agent}->request($req);
+    $self->{last_request}  = $req;
+    $self->{last_response} = $res;
 
     my ($token, $errmsg);
     try {
@@ -264,6 +268,8 @@ sub refresh_access_token {
     my $req = HTTP::Request->new( POST => $args{uri}, $headers, $content );
 
     my $res = $self->{agent}->request($req);
+    $self->{last_request}  = $req;
+    $self->{last_response} = $res;
 
     my ($token, $errmsg);
     try {
@@ -273,6 +279,21 @@ sub refresh_access_token {
     };
     return $token || $self->error($errmsg);
 }
+
+=head2 last_request
+
+Returns a HTTP::Request object that is used
+when you obtain or refresh access token last time internally.
+
+=head2 last_request
+
+Returns a HTTP::Response object that is used
+when you obtain or refresh access token last time internally.
+
+=cut
+
+sub last_request  { $_[0]->{last_request}  }
+sub last_response { $_[0]->{last_response} }
 
 =head1 AUTHOR
 
