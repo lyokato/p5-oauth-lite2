@@ -1,5 +1,8 @@
 Revision history for Perl extension OAuth::Lite2.
 
+0.01_08  Mon Feb 14 17:07:00 2011
+    - support client_credentials profile
+
 0.01_07  Tue Jan 04 10:40:00 2010
     - added last_request/last_response on clients to access
       HTTP::Request/HTTP::Response internally used.
