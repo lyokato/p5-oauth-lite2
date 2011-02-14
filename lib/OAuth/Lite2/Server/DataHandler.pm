@@ -59,7 +59,7 @@ sub get_auth_info_by_refresh_token {
 }
 
 sub get_client_user_id {
-    my ($self, $client_id, $client_secret) = @_;
+    my ($self, $client_id) = @_;
     die "abstract method";
 }
 

@@ -50,7 +50,8 @@ sub gen_next_access_token_id {
 sub add_client {
     my ($class, %args) = @_;
     $CLIENTS{ $args{id} } = {
-        secret => $args{secret},
+        secret  => $args{secret},
+        user_id => $args{user_id} || 0,
     };
 }
 
@@ -72,16 +73,10 @@ sub get_user_id {
     return $username;
 }
 
-# called in folling flows:
-# - web_server
-# - username
-# - client_credentials
-# - refresh
 sub get_client_user_id {
-    my ($self, $client_id, $client_secret) = @_;
+    my ($self, $client_id) = @_;
     return unless ($client_id && exists $CLIENTS{$client_id});
-    return unless ($client_secret && $CLIENTS{$client_id}{secret} eq $client_secret);
-    return $CLIENTS{$client_id};
+    return $CLIENTS{$client_id}{user_id};
 }
 
 # TODO needed?
