@@ -1,5 +1,8 @@
 Revision history for Perl extension OAuth::Lite2.
 
+0.01_09  Mon Feb 14 17:07:00 2011
+    - added client_secret value as parameter for get_client_user_id method
+
 0.01_08  Mon Feb 14 17:07:00 2011
     - support client_credentials profile
 
