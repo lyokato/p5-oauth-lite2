@@ -13,9 +13,10 @@ sub handle_request {
     my $req = $ctx->request;
     my $dh  = $ctx->data_handler;
 
-    my $client_id = $req->param("client_id");
+    my $client_id     = $req->param("client_id");
+    my $client_secret = $req->param("client_secret");
 
-    my $user_id = $dh->get_client_user_id($client_id)
+    my $user_id = $dh->get_client_user_id($client_id, $client_secret)
         or OAuth::Lite2::Server::Error::InvalidClient->throw;
 
     my $scope = $req->param("scope");
