@@ -92,7 +92,7 @@ sub handle_request {
         my $handler = $self->{grant_handlers}{$type}
             or OAuth::Lite2::Server::Error::UnsupportedGrantType->throw;
 
-        my $data_handler = $self->{data_handler}->new;
+        my $data_handler = $self->{data_handler}->new(request => $request);
 
         my $client_id = $request->param("client_id")
             or OAuth::Lite2::Server::Error::InvalidRequest->throw(
@@ -107,12 +107,7 @@ sub handle_request {
         $data_handler->validate_client($client_id, $client_secret, $type)
             or OAuth::Lite2::Server::Error::InvalidClient->throw;
 
-        my $ctx = OAuth::Lite2::Server::Context->new({
-            request      => $request,
-            data_handler => $data_handler,
-        });
-
-        my $result = $handler->handle_request($ctx);
+        my $result = $handler->handle_request($data_handler);
 
         return $request->new_response(200,
             [ "Content-Type"  => $formatter->type,

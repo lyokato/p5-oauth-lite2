@@ -9,7 +9,7 @@ sub new {
 }
 
 sub handle_request {
-    my ($self, $ctx) = @_;
+    my ($self, $data_handler) = @_;
     die "abstract method";
 }
 
@@ -28,12 +28,12 @@ OAuth::Lite2::Server::GrantHandler - base class of each grant_type handler
 
 Constructor
 
-=head2 handle_request( $ctx )
+=head2 handle_request( $data_handler )
 
-processes passed L<OAuth::Lite2::Server::Context>, and return
+processes passed L<OAuth::Lite2::Server::DataHandler>, and return
 hash represents that includes response-parameters.
 
-    my $res = $handler->handle_request( $ctx );
+    my $res = $handler->handle_request( $data_handler );
 
 =head1 SEE ALSO
 

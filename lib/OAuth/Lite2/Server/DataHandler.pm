@@ -7,10 +7,15 @@ use Params::Validate;
 use OAuth::Lite2::Server::Error;
 
 sub new {
-    my $class = shift;
-    my $self = bless { @_ }, $class;
+    my ($class, %args) = @_;
+    my $self = bless { request => undef, %args }, $class;
     $self->init;
     $self;
+}
+
+sub request {
+    my $self = shift;
+    return $self->{request};
 }
 
 sub init {
@@ -103,6 +108,10 @@ If your subclass need some initiation, implement in this method.
 
 =head1 INTERFACES
 
+=head2 request
+
+Returns <Plack::Request> object.
+
 =head2 validate_client( $client_id, $client_secret, $grant_type )
 
 This interface is used on Token Endpoint.
@@ -174,7 +183,7 @@ If OK, return 1.
 
 =head2 validate_user_by_id( $user_id )
 
-This fook is called on protected resource endpoint.
+This hook is called on protected resource endpoint.
 See L<Plack::Middleware::Auth::OAuth2::ProtectedResource>.
 
 After checking if token is valid, furthermore you can check

@@ -31,7 +31,7 @@ sub call {
         my ($token, $params) = $parser->parse($req);
         OAuth::Lite2::Server::Error::InvalidRequest->throw unless $token;
 
-        my $dh = $self->{data_handler}->new;
+        my $dh = $self->{data_handler}->new(request => $req);
 
         my $access_token = $dh->get_access_token($token);
 

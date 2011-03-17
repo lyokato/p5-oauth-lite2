@@ -7,7 +7,6 @@ use Test::More tests => 9;
 use Plack::Request;
 use Try::Tiny;
 use TestDataHandler;
-use OAuth::Lite2::Server::Context;
 use OAuth::Lite2::Server::GrantHandler::RefreshToken;
 use OAuth::Lite2::Util qw(build_content);
 
@@ -33,12 +32,9 @@ sub test_success {
         REQUEST_METHOD => q{GET},
         QUERY_STRING   => build_content($params),
     });
-    my $ctx = OAuth::Lite2::Server::Context->new({
-        request      => $request,
-        data_handler => $dh,
-    });
+    my $dh = TestDataHandler->new(request => $request);
     my $res; try {
-        $res = $action->handle_request($ctx);
+        $res = $action->handle_request($dh);
     } catch {
         my $error_message = ($_->isa("OAuth::Lite2::Error"))
             ? $_->type : $_;
@@ -84,12 +80,9 @@ sub test_error {
         REQUEST_METHOD => q{GET},
         QUERY_STRING   => build_content($params),
     });
-    my $ctx = OAuth::Lite2::Server::Context->new({
-        request      => $request,
-        data_handler => $dh,
-    });
+    my $dh = TestDataHandler->new(request => $request);
     my $error_message; try {
-        my $res = $action->handle_request($ctx);
+        my $res = $action->handle_request($dh);
     } catch {
         $error_message = ($_->isa("OAuth::Lite2::Error"))
             ? $_->type : $_;

@@ -8,10 +8,9 @@ use OAuth::Lite2::Server::Error;
 use Carp ();
 
 sub handle_request {
-    my ($self, $ctx) = @_;
+    my ($self, $dh) = @_;
 
-    my $req = $ctx->request;
-    my $dh  = $ctx->data_handler;
+    my $req = $dh->request;
 
     my $client_id = $req->param("client_id");
 
@@ -66,7 +65,7 @@ OAuth::Lite2::Server::GrantHandler::Password - handler for 'password' grant_type
 =head1 SYNOPSIS
 
     my $handler = OAuth::Lite2::Server::GrantHandler::Password->new;
-    my $res = $handler->handle_request( $ctx );
+    my $res = $handler->handle_request( $data_handler );
 
 =head1 DESCRIPTION
 
