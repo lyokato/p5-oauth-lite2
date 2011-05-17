@@ -1,6 +1,6 @@
 Revision history for Perl extension OAuth::Lite2.
 
-0.01_11  Tue May 17 19:43:00 2011
+0.01_12  Tue May 17 19:43:00 2011
     - client credentials grant handler now works as expected when client_user_id == 0
 
 0.01_10  Thu Mar 17 13:28:00 2011
