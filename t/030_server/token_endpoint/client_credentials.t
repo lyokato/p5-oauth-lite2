@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use Test::More tests => 6;
+use Test::More tests => 11;
 
 use Plack::Request;
 use Try::Tiny;
@@ -11,7 +11,8 @@ use OAuth::Lite2::Server::GrantHandler::ClientCredentials;
 use OAuth::Lite2::Util qw(build_content);
 
 TestDataHandler->clear;
-TestDataHandler->add_client(id => q{foo}, secret => q{bar}, user_id => 1);
+TestDataHandler->add_client(id => q{foo}, secret => q{bar},  user_id => 1);
+TestDataHandler->add_client(id => q{buz}, secret => q{hoge}, user_id => 0);
 
 my $dh = TestDataHandler->new;
 my $auth_info = $dh->create_or_update_auth_info(
@@ -19,8 +20,14 @@ my $auth_info = $dh->create_or_update_auth_info(
     user_id   => q{1},
     scope     => q{email},
 );
+my $auth_info2 = $dh->create_or_update_auth_info(
+    client_id => q{buz},
+    user_id   => q{0},
+    scope     => q{email},
+);
 
 is($auth_info->refresh_token, "refresh_token_0");
+is($auth_info2->refresh_token, "refresh_token_1");
 
 my $action = OAuth::Lite2::Server::GrantHandler::ClientCredentials->new;
 
@@ -90,9 +97,21 @@ sub test_error {
 }, {
     token         => q{access_token_0},
     expires_in    => q{3600},
-    refresh_token => q{refresh_token_1},
+    refresh_token => q{refresh_token_2},
 });
+
+# work as expected when user_id is 1
+&test_success({
+    client_id     => q{buz},
+    client_secret => q{hoge},
+}, {
+    token         => q{access_token_1},
+    expires_in    => q{3600},
+    refresh_token => q{refresh_token_3},
+});
+
 &test_error({
     client_id     => q{unknown},    
     client_secret => q{bar},
 }, q/invalid_client/);
+

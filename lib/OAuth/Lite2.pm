@@ -3,7 +3,7 @@ package OAuth::Lite2;
 use strict;
 use warnings;
 
-our $VERSION = '0.01_10';
+our $VERSION = '0.01_11';
 
 1;
 __END__
