@@ -31,7 +31,7 @@ sub call {
         my ($token, $params) = $parser->parse($req);
         OAuth::Lite2::Server::Error::InvalidRequest->throw unless $token;
 
-        my $dh = $self->{data_handler}->new(request => $req);
+        my $dh = $self->{data_handler}->new;
 
         my $access_token = $dh->get_access_token($token);
 
@@ -69,12 +69,12 @@ sub call {
         if ($_->isa("OAuth::Lite2::Server::Error")) {
 
             my @params;
-            push(@params, sprintf(q{realm="%s"}, $self->{realm}))
+            push(@params, sprintf(q{realm='%s'}, $self->{realm}))
                 if $self->{realm};
-            push(@params, sprintf(q{error="%s"}, $_->type));
-            push(@params, sprintf(q{error_description="%s"}, $_->description))
+            push(@params, sprintf(q{error='%s'}, $_->type));
+            push(@params, sprintf(q{error-desc='%s'}, $_->description))
                 if $_->description;
-            push(@params, sprintf(q{error_uri="%s"}, $self->{error_uri}))
+            push(@params, sprintf(q{error-uri='%s'}, $self->{error_uri}))
                 if $self->{error_uri};
             # push(@params, sprintf(q{scope='%s'}, $_->scope))
             #     if $_->scope;
