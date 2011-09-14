@@ -16,7 +16,7 @@ OAuth::Lite2::Agent::PSGIMock - Agent class for test which use PSGI App
 
     use Test::More;
 
-    my $endpoit = OAuth::Lite2::Server::Endpoint::Token->new(
+    my $endpoint = OAuth::Lite2::Server::Endpoint::Token->new(
         data_handler => 'YourApp::DataHandler',
     );
 

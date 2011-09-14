@@ -156,7 +156,7 @@ token_endpoint.psgi
         my $app = OAuth::Lite2::Server::Endpoint::Token->new(
             data_handler => 'MyDataHandlerClass',
         );
-        $app->support_grant_types(qw(authorization-code refresh-token));
+        $app->support_grant_types(qw(authorization_code refresh_token));
         $app;
     };
 
@@ -190,7 +190,7 @@ This would be included in error responses.
 
 =head2 support_grant_types( @types )
 
-You can set 'authorization-code', 'password', or 'refresh-token'
+You can set 'authorization_code', 'password', or 'refresh_token'
 
 =head2 data_handler
 
@@ -207,7 +207,7 @@ You can test with L<OAuth::Lite2::Agent::PSGIMock> and some of client classes.
     my $app = OAuth::Lite2::Server::Endpoint::Token->new(
         data_handler => 'MyDataHandlerClass',
     );
-    $app->support_grant_types(qw(authorization-code refresh-token));
+    $app->support_grant_types(qw(authorization_code refresh_token));
     my $mock_agent = OAuth::Lite2::Agent::PSGIMock->new(app => $app);
     my $client = OAuth::Lite2::Client::UsernameAndPassword->new(
         id     => q{my_client_id},

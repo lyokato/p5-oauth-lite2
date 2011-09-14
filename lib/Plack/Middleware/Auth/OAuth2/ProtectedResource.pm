@@ -22,7 +22,7 @@ sub call {
 
         # after draft-v6, signature is not required, so always each connection
         # should be under TLS.
-        warn "insecure barere token request" unless $req->secure;
+        warn "insecure bearere token request" unless $req->secure;
 
         my $parser = OAuth::Lite2::ParamMethods->get_param_parser($req)
             or OAuth::Lite2::Server::Error::InvalidRequest->throw;
@@ -102,7 +102,7 @@ Plack::Middleware::Auth::OAuth2::ProtectedResource - middleware for OAuth 2.0 Pr
 
     my $app = sub {...};
     builder {
-        enable "Plack::Middleware::OAuth2::ProtectedResource",
+        enable "Plack::Middleware::Auth::OAuth2::ProtectedResource",
             data_handler => "YourApp::DataHandler",
             error_uri    => q{http://example.org/error/description};
         enable "Plack::Middleware::JSONP";
