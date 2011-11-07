@@ -22,7 +22,7 @@ sub call {
 
         # after draft-v6, signature is not required, so always each connection
         # should be under TLS.
-        warn "insecure bearere token request" unless $req->secure;
+        # warn "insecure bearere token request" unless $req->secure;
 
         my $parser = OAuth::Lite2::ParamMethods->get_param_parser($req)
             or OAuth::Lite2::Server::Error::InvalidRequest->throw;
