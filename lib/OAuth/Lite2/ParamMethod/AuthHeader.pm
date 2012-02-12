@@ -51,7 +51,7 @@ Returns true if passed L<Plack::Request> object is matched for the type of this 
 sub match {
     my ($self, $req) = @_;
     my $header = $req->header("Authorization");
-    return ($header && $header =~ /^\s*OAuth\s+(.+)$/);
+    return ($header && $header =~ /^\s*(OAuth|Bearer)\s+(.+)$/);
 }
 
 =head2 parse( $plack_request )
@@ -65,8 +65,8 @@ Parse the L<Plack::Request>, and returns access token and oauth parameters.
 sub parse {
     my ($self, $req) = @_;
     my $header = $req->header("Authorization");
-    $header =~ s/^\s*OAuth\s+([^\s\,]+)//;
-    my $token = $1;
+    $header =~ s/^\s*(OAuth|Bearer)\s+([^\s\,]+)//;
+    my $token = $2;
     my $params = Hash::MultiValue->new;
     if ($header) {
         $header =~ s/^\s*\,\s*//;
@@ -125,7 +125,7 @@ sub build_request {
     } else {
         $headers = HTTP::Headers->new;
     }
-    my $auth_header = sprintf(q{OAuth %s}, $args{token});
+    my $auth_header = sprintf(q{Bearer %s}, $args{token});
     $auth_header .= ", " . join(", ", @pairs) if @pairs > 0;
     $headers->header(Authorization => $auth_header);
 
@@ -147,6 +147,22 @@ sub build_request {
         my $req = HTTP::Request->new($method, $args{url}, $headers, $content);
         return $req;
     }
+}
+
+=head2 is_legacy( $plack_request )
+
+Returns true if passed L<Plack::Request> object is based draft version 10.
+
+    if ( $meth->is_legacy( $plack_request ) ) {
+        ...
+    }
+
+=cut
+
+sub is_legacy {
+    my ($self, $req) = @_;
+    my $header = $req->header("Authorization");
+    return ($header && $header =~ /^\s*OAuth\s+(.+)$/);
 }
 
 =head1 SEE ALSO
