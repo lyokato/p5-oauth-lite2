@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use Test::More tests => 11;
+use Test::More tests => 12;
 
 use Plack::Request;
 use Try::Tiny;
@@ -43,6 +43,7 @@ sub test_success {
     };
 
     if(exists $expected->{token}) {
+        is($res->{token_type}, $expected->{token_type});
         is($res->{access_token}, $expected->{token});
     } else {
         ok(!$res->{access_token});
@@ -138,6 +139,7 @@ sub test_error {
     client_secret => q{secret_value},
     redirect_uri  => q{http://example.org/callback},
 }, {
+    token_type    => q{bearer},
     token         => q{access_token_0},
     expires_in    => q{3600},
     refresh_token => q{refresh_token_0},

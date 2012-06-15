@@ -15,6 +15,7 @@ use OAuth::Lite2::ParamMethods;
 
 sub call {
     my ($self, $env) = @_;
+    my $is_legacy = 0;
 
     my $error_res = try {
 
@@ -26,6 +27,8 @@ sub call {
 
         my $parser = OAuth::Lite2::ParamMethods->get_param_parser($req)
             or OAuth::Lite2::Server::Error::InvalidRequest->throw;
+
+        $is_legacy = $parser->is_legacy($req);
 
         # after draft-v6, $params aren't required.
         my ($token, $params) = $parser->parse($req);
@@ -41,8 +44,13 @@ sub call {
         Carp::croak "OAuth::Lite2::Server::DataHandler::get_access_token doesn't return OAuth::Lite2::Model::AccessToken"
             unless $access_token->isa("OAuth::Lite2::Model::AccessToken");
 
-        OAuth::Lite2::Server::Error::ExpiredToken->throw
-            unless ($access_token->created_on + $access_token->expires_in > time());
+        if($is_legacy){
+            OAuth::Lite2::Server::Error::ExpiredTokenLegacy->throw
+                unless ($access_token->created_on + $access_token->expires_in > time());
+        }else{
+            OAuth::Lite2::Server::Error::ExpiredToken->throw
+                unless ($access_token->created_on + $access_token->expires_in > time());
+        }
 
         my $auth_info = $dh->get_auth_info_by_id($access_token->auth_id);
 
@@ -79,8 +87,13 @@ sub call {
             # push(@params, sprintf(q{scope='%s'}, $_->scope))
             #     if $_->scope;
 
-            return [ $_->code, [ "WWW-Authenticate" =>
-                "OAuth " . join(', ', @params) ], [  ] ];
+            if($is_legacy){
+                return [ $_->code, [ "WWW-Authenticate" =>
+                    "OAuth " . join(', ', @params) ], [  ] ];
+            }else{
+                return [ $_->code, [ "WWW-Authenticate" =>
+                    "Bearer " . join(', ', @params) ], [  ] ];
+            }
 
         } else {
 

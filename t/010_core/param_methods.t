@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 122;
+use Test::More tests => 134;
 
 use OAuth::Lite2::ParamMethods qw(AUTH_HEADER FORM_BODY URI_QUERY);
 use Try::Tiny;
@@ -40,7 +40,7 @@ TEST_AUTH_HEADER: {
         oauth_params => {},
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{OAuth access_token_value});
+    is($req->header("Authorization"), q{Bearer access_token_value});
     is(uc $req->method, q{GET});
     ok(!$req->content);
 
@@ -52,6 +52,21 @@ TEST_AUTH_HEADER: {
 
     $p = OAuth::Lite2::ParamMethods->get_param_parser($p_req);
     isa_ok($p, "OAuth::Lite2::ParamMethod::AuthHeader");
+    ok(!$p->is_legacy($p_req));
+    ($token, $params) = $p->parse($p_req);
+    is($token, "access_token_value");
+
+    # legacy request
+    $req->header(Authorization => q{OAuth access_token_value});
+    $p_req = Plack::Request->new({
+        REQUEST_URI        => $req->uri,
+        REQUEST_METHOD     => $req->method,
+        HTTP_AUTHORIZATION => $req->header("Authorization"),
+    });
+
+    $p = OAuth::Lite2::ParamMethods->get_param_parser($p_req);
+    isa_ok($p, "OAuth::Lite2::ParamMethod::AuthHeader");
+    ok($p->is_legacy($p_req));
     ($token, $params) = $p->parse($p_req);
     is($token, "access_token_value");
 
@@ -68,7 +83,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{OAuth access_token_value, algorithm="hmac-sha256", nonce="s8djwd", signature="wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D", timestamp="137131200"});
+    is($req->header("Authorization"), q{Bearer access_token_value, algorithm="hmac-sha256", nonce="s8djwd", signature="wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D", timestamp="137131200"});
     is(uc $req->method, q{GET});
     ok(!$req->content);
 
@@ -99,7 +114,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource?buz=hoge&foo=bar});
-    is($req->header("Authorization"), q{OAuth access_token_value});
+    is($req->header("Authorization"), q{Bearer access_token_value});
     is(uc $req->method, q{GET});
     ok(!$req->content);
 
@@ -132,7 +147,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource?buz=hoge&foo=bar});
-    is($req->header("Authorization"), q{OAuth access_token_value});
+    is($req->header("Authorization"), q{Bearer access_token_value});
     is(uc $req->method, q{GET});
     ok(!$req->content);
 
@@ -151,7 +166,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{OAuth access_token_value});
+    is($req->header("Authorization"), q{Bearer access_token_value});
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/x-www-form-urlencoded});
     is($req->content, q{buz=hoge&foo=bar});
@@ -187,7 +202,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{OAuth access_token_value});
+    is($req->header("Authorization"), q{Bearer access_token_value});
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/x-www-form-urlencoded});
     is($req->content, q{buz=hoge&foo=bar});
@@ -206,7 +221,7 @@ TEST_AUTH_HEADER: {
         },
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{OAuth access_token_value});
+    is($req->header("Authorization"), q{Bearer access_token_value});
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/xml});
     is($req->content, q{<content>value</content>});
@@ -220,7 +235,7 @@ TEST_AUTH_HEADER: {
         oauth_params => {},
     );
     is($req->uri, q{http://example.org/resource});
-    is($req->header("Authorization"), q{OAuth access_token_value});
+    is($req->header("Authorization"), q{Bearer access_token_value});
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/xml});
     is($req->content, q{});
@@ -296,7 +311,7 @@ TEST_FORM_BODY: {
     ok(!$req->header("Authorization"));
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/x-www-form-urlencoded});
-    is($req->content, q{buz=hoge&foo=bar&oauth_token=access_token_value});
+    is($req->content, q{access_token=access_token_value&buz=hoge&foo=bar});
 
     $p_req = Plack::Request->new({
         REQUEST_URI        => $req->uri,
@@ -308,12 +323,28 @@ TEST_FORM_BODY: {
 
     $p = OAuth::Lite2::ParamMethods->get_param_parser($p_req);
     isa_ok($p, "OAuth::Lite2::ParamMethod::FormEncodedBody");
+    ok(!$p->is_legacy($p_req));
     ($token, $params) = $p->parse($p_req);
     is($token, "access_token_value");
     ok(!$params->{nonce});
     ok(!$params->{timestamp});
     ok(!$params->{algorithm});
     ok(!$params->{signature});
+
+    # legacy request
+    $req->content(q{oauth_token=access_token_value&buz=hoge&foo=bar});
+    $p_req = Plack::Request->new({
+        REQUEST_URI        => $req->uri,
+        REQUEST_METHOD     => $req->method,
+        CONTENT_TYPE       => $req->header("Content-Type"),
+        CONTENT_LENGTH     => $req->header("Content-Length") - 1,
+        'psgi.input'       => IO::String->new($req->content),
+    });
+    $p = OAuth::Lite2::ParamMethods->get_param_parser($p_req);
+    isa_ok($p, "OAuth::Lite2::ParamMethod::FormEncodedBody");
+    ok($p->is_legacy($p_req));
+    ($token, $params) = $p->parse($p_req);
+    is($token, "access_token_value");
 
     # With OAuth Params
     $req = $body->build_request(
@@ -334,7 +365,7 @@ TEST_FORM_BODY: {
     ok(!$req->header("Authorization"));
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/x-www-form-urlencoded});
-    is($req->content, q{algorithm=hmac-sha256&buz=hoge&foo=bar&nonce=s8djwd&oauth_token=access_token_value&signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&timestamp=137131200});
+    is($req->content, q{access_token=access_token_value&algorithm=hmac-sha256&buz=hoge&foo=bar&nonce=s8djwd&signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&timestamp=137131200});
 
     $p_req = Plack::Request->new({
         REQUEST_URI        => $req->uri,
@@ -366,7 +397,7 @@ TEST_URI_QUERY: {
         token        => q{access_token_value},
         oauth_params => {},
     );
-    is($req->uri, q{http://example.org/resource?oauth_token=access_token_value});
+    is($req->uri, q{http://example.org/resource?access_token=access_token_value});
     ok(!$req->header("Authorization"));
     is(uc $req->method, q{GET});
     ok(!$req->content);
@@ -374,7 +405,7 @@ TEST_URI_QUERY: {
     $p_req = Plack::Request->new({
         REQUEST_URI        => q{http://example.org/resource},
         REQUEST_METHOD     => $req->method,
-        QUERY_STRING       => q{oauth_token=access_token_value},
+        QUERY_STRING       => q{access_token=access_token_value},
         #CONTENT_TYPE       => $req->header("Content-Type"),
         #CONTENT_LENGTH     => $req->header("Content-Length"),
         #'psgi.input'       => IO::String->new($req->content),
@@ -382,12 +413,28 @@ TEST_URI_QUERY: {
 
     $p = OAuth::Lite2::ParamMethods->get_param_parser($p_req);
     isa_ok($p, "OAuth::Lite2::ParamMethod::URIQueryParameter");
+    ok(!$p->is_legacy($p_req));
     ($token, $params) = $p->parse($p_req);
     is($token, "access_token_value");
     ok(!$params->{nonce});
     ok(!$params->{timestamp});
     ok(!$params->{algorithm});
     ok(!$params->{signature});
+
+    # legacy request
+    $p_req = Plack::Request->new({
+        REQUEST_URI        => q{http://example.org/resource},
+        REQUEST_METHOD     => q{GET},
+        QUERY_STRING       => q{oauth_token=access_token_value},
+        #CONTENT_TYPE       => $req->header("Content-Type"),
+        #CONTENT_LENGTH     => $req->header("Content-Length"),
+        #'psgi.input'       => IO::String->new($req->content),
+    });
+    $p = OAuth::Lite2::ParamMethods->get_param_parser($p_req);
+    isa_ok($p, "OAuth::Lite2::ParamMethod::URIQueryParameter");
+    ok($p->is_legacy($p_req));
+    ($token, $params) = $p->parse($p_req);
+    is($token, "access_token_value");
 
     # With OAuth Params
     $req = $query->build_request(
@@ -401,7 +448,7 @@ TEST_URI_QUERY: {
             signature => q{wOJIO9A2W5mFwDgiDvZbTSMK/PY=},
         },
     );
-    is($req->uri, q{http://example.org/resource?algorithm=hmac-sha256&nonce=s8djwd&oauth_token=access_token_value&signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&timestamp=137131200});
+    is($req->uri, q{http://example.org/resource?access_token=access_token_value&algorithm=hmac-sha256&nonce=s8djwd&signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&timestamp=137131200});
     ok(!$req->header("Authorization"));
     is(uc $req->method, q{GET});
     ok(!$req->content);
@@ -417,7 +464,7 @@ TEST_URI_QUERY: {
             buz => 'hoge',
         },
     );
-    is($req->uri, q{http://example.org/resource?buz=hoge&foo=bar&oauth_token=access_token_value});
+    is($req->uri, q{http://example.org/resource?access_token=access_token_value&buz=hoge&foo=bar});
     ok(!$req->header("Authorization"));
     is(uc $req->method, q{GET});
     ok(!$req->content);
@@ -438,7 +485,7 @@ TEST_URI_QUERY: {
             buz => 'hoge',
         },
     );
-    is($req->uri, q{http://example.org/resource?algorithm=hmac-sha256&buz=hoge&foo=bar&nonce=s8djwd&oauth_token=access_token_value&signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&timestamp=137131200});
+    is($req->uri, q{http://example.org/resource?access_token=access_token_value&algorithm=hmac-sha256&buz=hoge&foo=bar&nonce=s8djwd&signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&timestamp=137131200});
     ok(!$req->header("Authorization"));
     is(uc $req->method, q{GET});
     ok(!$req->content);
@@ -454,7 +501,7 @@ TEST_URI_QUERY: {
             buz => 'hoge',
         },
     );
-    is($req->uri, q{http://example.org/resource?oauth_token=access_token_value});
+    is($req->uri, q{http://example.org/resource?access_token=access_token_value});
     ok(!$req->header("Authorization"));
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/x-www-form-urlencoded});
@@ -476,7 +523,7 @@ TEST_URI_QUERY: {
             buz => 'hoge',
         },
     );
-    is($req->uri, q{http://example.org/resource?algorithm=hmac-sha256&nonce=s8djwd&oauth_token=access_token_value&signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&timestamp=137131200});
+    is($req->uri, q{http://example.org/resource?access_token=access_token_value&algorithm=hmac-sha256&nonce=s8djwd&signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&timestamp=137131200});
     ok(!$req->header("Authorization"));
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/x-www-form-urlencoded});
@@ -500,7 +547,7 @@ TEST_URI_QUERY: {
             buz => 'hoge',
         },
     );
-    is($req->uri, q{http://example.org/resource?algorithm=hmac-sha256&nonce=s8djwd&oauth_token=access_token_value&signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&timestamp=137131200});
+    is($req->uri, q{http://example.org/resource?access_token=access_token_value&algorithm=hmac-sha256&nonce=s8djwd&signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&timestamp=137131200});
     ok(!$req->header("Authorization"));
     is(uc $req->method, q{POST});
     is($req->header("Content-Type"), q{application/xml});
