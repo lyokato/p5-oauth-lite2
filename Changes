@@ -1,5 +1,10 @@
 Revision history for Perl extension OAuth::Lite2.
 
+0.02_01  Sat Jun 15 09:20:00 2012
+    - updated to draft27 spec
+      https://github.com/lyokato/p5-oauth-lite2/pull/5
+      Thanks to ritou
+
 0.01_14  Mon Nov 7 19:50:00 2011
     - removed non-SSL warning
 
