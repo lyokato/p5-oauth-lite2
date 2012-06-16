@@ -93,6 +93,8 @@ L<http://tools.ietf.org/html/draft-ietf-oauth-v2-09#section-5.2>
 
 =item OAuth::Lite2::Server::Error::ExpiredToken
 
+=item OAuth::Lite2::Server::Error::ExpiredTokenLegacy
+
 =item OAuth::Lite2::Server::Error::InvalidRequest
 
 =item OAuth::Lite2::Server::Error::InvalidToken
@@ -182,10 +184,16 @@ our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
 sub type { "invalid_token" }
 
-package OAuth::Lite2::Server::Error::ExpiredToken;
+package OAuth::Lite2::Server::Error::ExpiredTokenLegacy;
 our @ISA = qw(OAuth::Lite2::Server::Error);
 sub code { 401 }
 sub type { "expired_token" }
+
+package OAuth::Lite2::Server::Error::ExpiredToken;
+our @ISA = qw(OAuth::Lite2::Server::Error);
+sub code { 401 }
+sub type { "invalid_token" }
+sub description { "The access token expired" }
 
 package OAuth::Lite2::Server::Error::InsufficientScope;
 our @ISA = qw(OAuth::Lite2::Server::Error);

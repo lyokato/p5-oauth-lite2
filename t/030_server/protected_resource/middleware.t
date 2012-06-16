@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14;
+use Test::More tests => 84;
 
 use lib 't/lib';
 use TestPR;
@@ -88,6 +88,20 @@ ok(!$res->is_success, 'request should fail');
 is($res->code, 401, 'invalid access token');
 is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="invalid_token"}, 'invalid access token');
 
+$req = HTTP::Request->new("POST" => q{http://example.org/});
+$req->content_type('application/x-www-form-urlencoded');
+$req->content(sprintf(q{oauth_token=%s}, 'invalid_access_token'));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid access token');
+is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="invalid_token"}, 'invalid access token');
+
+$req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?oauth_token=%s}, 'invalid_access_token'));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid access token');
+is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="invalid_token"}, 'invalid access token');
+
 sleep 2;
 $req = HTTP::Request->new("GET" => q{http://example.org/});
 $req->header("Authorization" => sprintf(q{OAuth %s}, $access_token2->token));
@@ -96,9 +110,36 @@ ok(!$res->is_success, 'request should fail');
 is($res->code, 401, 'expired access token');
 is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="expired_token"}, 'expired token');
 
+$req = HTTP::Request->new("POST" => q{http://example.org/});
+$req->content_type('application/x-www-form-urlencoded');
+$req->content(sprintf(q{oauth_token=%s}, $access_token2->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'expired access token');
+is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="expired_token"}, 'expired token');
+
+$req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?oauth_token=%s}, $access_token2->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'expired access token');
+is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="expired_token"}, 'expired token');
 
 $req = HTTP::Request->new("GET" => q{http://example.org/});
 $req->header("Authorization" => sprintf(q{OAuth %s}, $access_token3->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid client');
+is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="invalid_token"}, 'invalid client');
+
+$req = HTTP::Request->new("POST" => q{http://example.org/});
+$req->content_type('application/x-www-form-urlencoded');
+$req->content(sprintf(q{oauth_token=%s}, $access_token3->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid client');
+is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="invalid_token"}, 'invalid client');
+
+$req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?oauth_token=%s}, $access_token3->token));
 $res = &request($req);
 ok(!$res->is_success, 'request should fail');
 is($res->code, 401, 'invalid client');
@@ -111,8 +152,139 @@ ok(!$res->is_success, 'request should fail');
 is($res->code, 401, 'invalid client');
 is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="invalid_token"}, 'invalid client');
 
+$req = HTTP::Request->new("POST" => q{http://example.org/});
+$req->content_type('application/x-www-form-urlencoded');
+$req->content(sprintf(q{oauth_token=%s}, $access_token4->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid client');
+is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="invalid_token"}, 'invalid client');
+
+$req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?oauth_token=%s}, $access_token4->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid client');
+is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="invalid_token"}, 'invalid client');
+
 $req = HTTP::Request->new("GET" => q{http://example.org/});
 $req->header("Authorization" => sprintf(q{OAuth %s}, $access_token->token));
 $res = &request($req);
 ok($res->is_success, 'request should not fail');
 is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+
+$req = HTTP::Request->new("POST" => q{http://example.org/});
+$req->content_type('application/x-www-form-urlencoded');
+$req->content(sprintf(q{oauth_token=%s}, $access_token->token));
+$res = &request($req);
+ok($res->is_success, 'request should not fail');
+is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+
+$req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?oauth_token=%s}, $access_token->token));
+$res = &request($req);
+ok($res->is_success, 'request should not fail');
+is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+
+# draft 23
+$req = HTTP::Request->new("GET" => q{http://example.org/});
+$req->header("Authorization" => sprintf(q{Bearer %s}, 'invalid_access_token'));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid access token');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token"}, 'invalid access token');
+
+$req = HTTP::Request->new("POST" => q{http://example.org/});
+$req->content_type('application/x-www-form-urlencoded');
+$req->content(sprintf(q{access_token=%s}, 'invalid_access_token'));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid access token');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token"}, 'invalid access token');
+
+$req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?access_token=%s}, 'invalid_access_token'));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid access token');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token"}, 'invalid access token');
+
+sleep 2;
+$req = HTTP::Request->new("GET" => q{http://example.org/});
+$req->header("Authorization" => sprintf(q{Bearer %s}, $access_token2->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'expired access token');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token", error_description="The access token expired"}, 'expired token');
+
+$req = HTTP::Request->new("POST" => q{http://example.org/});
+$req->content_type('application/x-www-form-urlencoded');
+$req->content(sprintf(q{access_token=%s}, $access_token2->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'expired access token');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token", error_description="The access token expired"}, 'expired token');
+
+$req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?access_token=%s}, $access_token2->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'expired access token');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token", error_description="The access token expired"}, 'expired token');
+
+$req = HTTP::Request->new("GET" => q{http://example.org/});
+$req->header("Authorization" => sprintf(q{Bearer %s}, $access_token3->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid client');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token"}, 'invalid client');
+
+$req = HTTP::Request->new("POST" => q{http://example.org/});
+$req->content_type('application/x-www-form-urlencoded');
+$req->content(sprintf(q{access_token=%s}, $access_token3->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid client');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token"}, 'invalid client');
+
+$req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?access_token=%s}, $access_token3->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid client');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token"}, 'invalid client');
+
+$req = HTTP::Request->new("GET" => q{http://example.org/});
+$req->header("Authorization" => sprintf(q{Bearer %s}, $access_token4->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid client');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token"}, 'invalid client');
+
+$req = HTTP::Request->new("POST" => q{http://example.org/});
+$req->content_type('application/x-www-form-urlencoded');
+$req->content(sprintf(q{access_token=%s}, $access_token4->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid client');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token"}, 'invalid client');
+
+$req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?access_token=%s}, $access_token4->token));
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 401, 'invalid client');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_token"}, 'invalid client');
+
+$req = HTTP::Request->new("GET" => q{http://example.org/});
+$req->header("Authorization" => sprintf(q{Bearer %s}, $access_token->token));
+$res = &request($req);
+ok($res->is_success, 'request should not fail');
+is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+
+$req = HTTP::Request->new("POST" => q{http://example.org/});
+$req->content_type('application/x-www-form-urlencoded');
+$req->content(sprintf(q{access_token=%s}, $access_token->token));
+$res = &request($req);
+ok($res->is_success, 'request should not fail');
+is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+
+$req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?access_token=%s}, $access_token->token));
+$res = &request($req);
+ok($res->is_success, 'request should not fail');
+is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+

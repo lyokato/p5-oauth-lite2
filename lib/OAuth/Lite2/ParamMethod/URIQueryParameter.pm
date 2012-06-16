@@ -48,7 +48,8 @@ Returns true if passed L<Plack::Request> object is matched for the type of this 
 
 sub match {
     my ($self, $req) = @_;
-    return exists $req->query_parameters->{oauth_token};
+    return (exists $req->query_parameters->{oauth_token} 
+            || exists $req->query_parameters->{access_token});
 }
 
 =head2 parse( $plack_request )
@@ -62,8 +63,12 @@ Parse the L<Plack::Request>, and returns access token and oauth parameters.
 sub parse {
     my ($self, $req) = @_;
     my $params = $req->query_parameters;
-    my $token = $params->{oauth_token};
-    $params->remove('oauth_token');
+    my $token = $params->{access_token};
+    $params->remove('access_token');
+    if($params->{oauth_token}){
+        $token = $params->{oauth_token};
+        $params->remove('oauth_token');
+    }
     return ($token, $params);
 }
 
@@ -96,7 +101,7 @@ sub build_request {
     });
 
     my $oauth_params = $args{oauth_params} || {};
-    $oauth_params->{oauth_token} = $args{token};
+    $oauth_params->{access_token} = $args{token};
 
     my $params  = $args{params} || {};
     my $method  = uc $args{method};
@@ -131,6 +136,21 @@ sub build_request {
         my $req = HTTP::Request->new($method, $url, $headers, $content);
         return $req;
     }
+}
+
+=head2 is_legacy( $plack_request )
+
+Returns true if passed L<Plack::Request> object is based draft version 10.
+
+    if ( $meth->is_legacy( $plack_request ) ) {
+        ...
+    }
+
+=cut
+
+sub is_legacy {
+    my ($self, $req) = @_;
+    return (exists $req->query_parameters->{oauth_token});
 }
 
 =head1 SEE ALSO
