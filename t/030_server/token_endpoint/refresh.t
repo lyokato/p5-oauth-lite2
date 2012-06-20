@@ -118,7 +118,7 @@ sub test_error {
     client_secret => q{bar},
     refresh_token => $auth_info->refresh_token,
 }, {
-    token_type    => q{bearer},
+    token_type    => q{Bearer},
     token         => q{access_token_0},
     expires_in    => q{3600},
     refresh_token => q{refresh_token_0},

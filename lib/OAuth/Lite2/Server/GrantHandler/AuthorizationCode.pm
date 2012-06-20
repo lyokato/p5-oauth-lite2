@@ -46,7 +46,7 @@ sub handle_request {
             && $access_token->isa("OAuth::Lite2::Model::AccessToken"));
 
     my $res = {
-        token_type => 'bearer',
+        token_type => 'Bearer',
         access_token => $access_token->token,
     };
 
