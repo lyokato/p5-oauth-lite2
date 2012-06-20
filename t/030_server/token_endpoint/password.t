@@ -137,7 +137,7 @@ sub test_error {
     username      => q{user_1},
     password      => q{pass_1},
 }, {
-    token_type    => q{bearer},
+    token_type    => q{Bearer},
     token         => q{access_token_0},
     expires_in    => q{3600},
     refresh_token => q{refresh_token_1},
