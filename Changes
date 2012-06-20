@@ -1,5 +1,9 @@
 Revision history for Perl extension OAuth::Lite2.
 
+0.02_02  Wed Jun 20 17:40:00 2012
+    - bugfix by ritou
+      https://github.com/lyokato/p5-oauth-lite2/pull/6
+
 0.02_01  Sat Jun 15 09:20:00 2012
     - updated to draft27 spec
       https://github.com/lyokato/p5-oauth-lite2/pull/5
