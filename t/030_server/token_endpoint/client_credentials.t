@@ -96,7 +96,7 @@ sub test_error {
     client_id     => q{foo},
     client_secret => q{bar},
 }, {
-    token_type    => q{bearer},
+    token_type    => q{Bearer},
     token         => q{access_token_0},
     expires_in    => q{3600},
     refresh_token => q{refresh_token_2},
@@ -107,7 +107,7 @@ sub test_error {
     client_id     => q{buz},
     client_secret => q{hoge},
 }, {
-    token_type    => q{bearer},
+    token_type    => q{Bearer},
     token         => q{access_token_1},
     expires_in    => q{3600},
     refresh_token => q{refresh_token_3},
