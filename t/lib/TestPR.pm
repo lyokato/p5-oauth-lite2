@@ -47,9 +47,10 @@ sub handle_request {
     my ($self, $request) = @_;
     return $request->new_response(200,
         ["Content-Type" => "application/json"],
-        [ sprintf("{user: '%s', scope: '%s'}",
+        [ sprintf("{user: '%s', scope: '%s', is_legacy: '%d'}",
             $request->env->{REMOTE_USER},
-            $request->env->{X_OAUTH_SCOPE})]
+            $request->env->{X_OAUTH_SCOPE},
+            $request->env->{X_OAUTH_IS_LEGACY})]
     );
 }
 
