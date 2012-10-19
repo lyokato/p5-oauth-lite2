@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 84;
+use Test::More tests => 96;
 
 use lib 't/lib';
 use TestPR;
@@ -81,6 +81,20 @@ sub request {
 
 
 my ($req, $res);
+$req = HTTP::Request->new("GET" => q{http://example.org/});
+$req->header("Authorization" => q{OAuth});
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 400, 'invalid access token');
+is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="invalid_request"}, 'invalid request');
+
+$req = HTTP::Request->new("GET" => q{http://example.org/});
+$req->header("Authorization" => q{OAuth });
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 400, 'invalid access token');
+is($res->header("WWW-Authenticate"), q{OAuth realm="resource.example.org", error="invalid_request"}, 'invalid request');
+
 $req = HTTP::Request->new("GET" => q{http://example.org/});
 $req->header("Authorization" => sprintf(q{OAuth %s}, 'invalid_access_token'));
 $res = &request($req);
@@ -170,21 +184,35 @@ $req = HTTP::Request->new("GET" => q{http://example.org/});
 $req->header("Authorization" => sprintf(q{OAuth %s}, $access_token->token));
 $res = &request($req);
 ok($res->is_success, 'request should not fail');
-is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+is($res->content, q{{user: '1', scope: 'email', is_legacy: '1'}}, 'successful response');
 
 $req = HTTP::Request->new("POST" => q{http://example.org/});
 $req->content_type('application/x-www-form-urlencoded');
 $req->content(sprintf(q{oauth_token=%s}, $access_token->token));
 $res = &request($req);
 ok($res->is_success, 'request should not fail');
-is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+is($res->content, q{{user: '1', scope: 'email', is_legacy: '1'}}, 'successful response');
 
 $req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?oauth_token=%s}, $access_token->token));
 $res = &request($req);
 ok($res->is_success, 'request should not fail');
-is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+is($res->content, q{{user: '1', scope: 'email', is_legacy: '1'}}, 'successful response');
 
-# draft 23
+# RFC 6749
+$req = HTTP::Request->new("GET" => q{http://example.org/});
+$req->header("Authorization" => q{Bearer});
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 400, 'invalid request');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_request"}, 'invalid request');
+
+$req = HTTP::Request->new("GET" => q{http://example.org/});
+$req->header("Authorization" => q{Bearer });
+$res = &request($req);
+ok(!$res->is_success, 'request should fail');
+is($res->code, 400, 'invalid request');
+is($res->header("WWW-Authenticate"), q{Bearer realm="resource.example.org", error="invalid_request"}, 'invalid request');
+
 $req = HTTP::Request->new("GET" => q{http://example.org/});
 $req->header("Authorization" => sprintf(q{Bearer %s}, 'invalid_access_token'));
 $res = &request($req);
@@ -274,17 +302,17 @@ $req = HTTP::Request->new("GET" => q{http://example.org/});
 $req->header("Authorization" => sprintf(q{Bearer %s}, $access_token->token));
 $res = &request($req);
 ok($res->is_success, 'request should not fail');
-is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+is($res->content, q{{user: '1', scope: 'email', is_legacy: '0'}}, 'successful response');
 
 $req = HTTP::Request->new("POST" => q{http://example.org/});
 $req->content_type('application/x-www-form-urlencoded');
 $req->content(sprintf(q{access_token=%s}, $access_token->token));
 $res = &request($req);
 ok($res->is_success, 'request should not fail');
-is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+is($res->content, q{{user: '1', scope: 'email', is_legacy: '0'}}, 'successful response');
 
 $req = HTTP::Request->new("GET" => sprintf(q{http://example.org/?access_token=%s}, $access_token->token));
 $res = &request($req);
 ok($res->is_success, 'request should not fail');
-is($res->content, q{{user: '1', scope: 'email'}}, 'successful response');
+is($res->content, q{{user: '1', scope: 'email', is_legacy: '0'}}, 'successful response');
 

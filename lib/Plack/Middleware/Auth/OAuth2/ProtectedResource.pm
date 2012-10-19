@@ -44,12 +44,13 @@ sub call {
         Carp::croak "OAuth::Lite2::Server::DataHandler::get_access_token doesn't return OAuth::Lite2::Model::AccessToken"
             unless $access_token->isa("OAuth::Lite2::Model::AccessToken");
 
-        if($is_legacy){
-            OAuth::Lite2::Server::Error::ExpiredTokenLegacy->throw
-                unless ($access_token->created_on + $access_token->expires_in > time());
-        }else{
-            OAuth::Lite2::Server::Error::ExpiredToken->throw
-                unless ($access_token->created_on + $access_token->expires_in > time());
+        unless ($access_token->created_on + $access_token->expires_in > time())
+        {
+            if($is_legacy){
+                OAuth::Lite2::Server::Error::ExpiredTokenLegacy->throw;
+            }else{
+                OAuth::Lite2::Server::Error::ExpiredToken->throw;
+            }
         }
 
         my $auth_info = $dh->get_auth_info_by_id($access_token->auth_id);
@@ -66,9 +67,11 @@ sub call {
         $dh->validate_user_by_id($auth_info->user_id)
             or OAuth::Lite2::Server::Error::InvalidToken->throw;
 
-        $env->{REMOTE_USER}    = $auth_info->user_id;
-        $env->{X_OAUTH_CLIENT} = $auth_info->client_id;
-        $env->{X_OAUTH_SCOPE}  = $auth_info->scope if $auth_info->scope;
+        $env->{REMOTE_USER}         = $auth_info->user_id;
+        $env->{X_OAUTH_CLIENT}      = $auth_info->client_id;
+        $env->{X_OAUTH_SCOPE}       = $auth_info->scope if $auth_info->scope;
+        # pass legacy flag
+        $env->{X_OAUTH_IS_LEGACY}   = ($is_legacy);
 
         return;
 
