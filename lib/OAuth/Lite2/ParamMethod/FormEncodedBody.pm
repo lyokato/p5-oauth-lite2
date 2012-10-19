@@ -153,8 +153,7 @@ Returns true if passed L<Plack::Request> object is based draft version 10.
 
 sub is_legacy {
     my ($self, $req) = @_;
-    my $method = lc $req->method;
-    return ($req->body_parameters->{oauth_token});
+    return (exists $req->body_parameters->{oauth_token});
 }
 
 =head1 SEE ALSO

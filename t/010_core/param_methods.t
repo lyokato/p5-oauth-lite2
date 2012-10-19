@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 134;
+use Test::More tests => 148;
 
 use OAuth::Lite2::ParamMethods qw(AUTH_HEADER FORM_BODY URI_QUERY);
 use Try::Tiny;
@@ -33,6 +33,30 @@ TEST_AUTH_HEADER: {
     # ==============================
     # Without OAuth Params
     my ($req, $p_req, $p, $token, $params);
+
+    # empty token
+    $req= $auth->build_request(
+        url          => q{http://example.org/resource},
+        method       => q{GET},
+        token        => "",
+        oauth_params => {},
+    );
+    is($req->uri, q{http://example.org/resource});
+    is($req->header("Authorization"), q{Bearer });
+    is(uc $req->method, q{GET});
+    ok(!$req->content);
+    
+    $p_req = Plack::Request->new({
+        REQUEST_URI        => $req->uri,
+        REQUEST_METHOD     => $req->method,
+        HTTP_AUTHORIZATION => $req->header("Authorization"),
+    });
+    $p = OAuth::Lite2::ParamMethods->get_param_parser($p_req);
+    isa_ok($p, "OAuth::Lite2::ParamMethod::AuthHeader");
+    ok(!$p->is_legacy($p_req));
+    ($token, $params) = $p->parse($p_req);
+    ok(!$token);
+
     $req= $auth->build_request(
         url          => q{http://example.org/resource},
         method       => q{GET},
@@ -57,6 +81,29 @@ TEST_AUTH_HEADER: {
     is($token, "access_token_value");
 
     # legacy request
+    $req= $auth->build_request(
+        url          => q{http://example.org/resource},
+        method       => q{GET},
+        token        => "",
+        oauth_params => {},
+    );
+    $req->header(Authorization => q{OAuth });
+    is($req->uri, q{http://example.org/resource});
+    is($req->header("Authorization"), q{OAuth });
+    is(uc $req->method, q{GET});
+    ok(!$req->content);
+    
+    $p_req = Plack::Request->new({
+        REQUEST_URI        => $req->uri,
+        REQUEST_METHOD     => $req->method,
+        HTTP_AUTHORIZATION => $req->header("Authorization"),
+    });
+    $p = OAuth::Lite2::ParamMethods->get_param_parser($p_req);
+    isa_ok($p, "OAuth::Lite2::ParamMethod::AuthHeader");
+    ok($p->is_legacy($p_req));
+    ($token, $params) = $p->parse($p_req);
+    ok(!$token);
+
     $req->header(Authorization => q{OAuth access_token_value});
     $p_req = Plack::Request->new({
         REQUEST_URI        => $req->uri,
