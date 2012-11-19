@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use Test::More tests => 18;
+use Test::More tests => 36;
 
 use TestDataHandler;
 use OAuth::Lite2::Server::Endpoint::Token;
@@ -43,7 +43,13 @@ $res = $client->get_access_token(
     code         => q{invalid_code},
     redirect_uri => q{http://example.org/callback},
 );
-
+ok(!$res, q{response should be undef});
+is($client->errstr, q{invalid_grant}, q{verification code should be invalid});
+$res = $client->get_access_token(
+    code         => q{invalid_code},
+    redirect_uri => q{http://example.org/callback},
+    use_basic_schema => 1,
+);
 ok(!$res, q{response should be undef});
 is($client->errstr, q{invalid_grant}, q{verification code should be invalid});
 
@@ -51,7 +57,13 @@ $res = $client->get_access_token(
     code         => q{valid_code},
     redirect_uri => q{http://invalid.example.org/callback},
 );
-
+ok(!$res, q{response should be undef});
+is($client->errstr, q{redirect_uri_mismatch}, q{redirect_uri should be invalid});
+$res = $client->get_access_token(
+    code         => q{valid_code},
+    redirect_uri => q{http://invalid.example.org/callback},
+    use_basic_schema => 1,
+);
 ok(!$res, q{response should be undef});
 is($client->errstr, q{redirect_uri_mismatch}, q{redirect_uri should be invalid});
 
@@ -59,16 +71,44 @@ $res = $client->get_access_token(
     code         => q{valid_code},
     redirect_uri => q{http://example.org/callback},
 );
-
 ok($res, q{response should be not undef});
 is($res->access_token, q{access_token_0});
 is($res->refresh_token, q{refresh_token_0});
 is($res->expires_in, q{3600});
 ok(!$res->access_token_secret);
 is($res->scope, q{email});
+$res = $client->get_access_token(
+    code         => q{valid_code},
+    redirect_uri => q{http://example.org/callback},
+    use_basic_schema => 1,
+);
+ok($res, q{response should be not undef});
+is($res->access_token, q{access_token_1});
+is($res->refresh_token, q{refresh_token_0});
+is($res->expires_in, q{3600});
+ok(!$res->access_token_secret);
+is($res->scope, q{email});
+
+# use Authorization Header flag for Basic Client Authentication
+#$res = $client->get_access_token(
+#    code         => q{valid_code},
+#    redirect_uri => q{http://example.org/callback},
+#    use_basic_schema    => 1
+#);
+#ok($res, q{response should be not undef});
+#is($res->access_token, q{access_token_0});
+#is($res->refresh_token, q{refresh_token_0});
+#is($res->expires_in, q{3600});
+#is($res->scope, q{email});
 
 $res = $client->refresh_access_token(
     refresh_token => q{invalid_refresh_token},
+);
+ok(!$res, q{response should be undef});
+is($client->errstr, q{invalid_grant}, q{refresh_token should be invalid-grant});
+$res = $client->refresh_access_token(
+    refresh_token => q{invalid_refresh_token},
+    use_basic_schema => 1,
 );
 ok(!$res, q{response should be undef});
 is($client->errstr, q{invalid_grant}, q{refresh_token should be invalid-grant});
@@ -76,9 +116,18 @@ is($client->errstr, q{invalid_grant}, q{refresh_token should be invalid-grant});
 $res = $client->refresh_access_token(
     refresh_token => q{refresh_token_0},
 );
-
 ok($res, q{response should be not undef});
-is($res->access_token, q{access_token_1});
+is($res->access_token, q{access_token_2});
+is($res->refresh_token, q{refresh_token_0});
+is($res->expires_in, q{3600});
+ok(!$res->access_token_secret);
+is($res->scope, q{email});
+$res = $client->refresh_access_token(
+    refresh_token => q{refresh_token_0},
+    use_basic_schema => 1,
+);
+ok($res, q{response should be not undef});
+is($res->access_token, q{access_token_3});
 is($res->refresh_token, q{refresh_token_0});
 is($res->expires_in, q{3600});
 ok(!$res->access_token_secret);
