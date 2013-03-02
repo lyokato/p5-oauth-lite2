@@ -15,6 +15,7 @@ use OAuth::Lite2::Server::Context;
 use OAuth::Lite2::Formatters;
 use OAuth::Lite2::Server::Error;
 use OAuth::Lite2::Server::GrantHandlers;
+use OAuth::Lite2::ParamMethod::AuthHeader;
 
 sub new {
     my $class = shift;
@@ -94,19 +95,25 @@ sub handle_request {
 
         my $data_handler = $self->{data_handler}->new(request => $request);
 
-        my $client_id = $request->param("client_id")
-            or OAuth::Lite2::Server::Error::InvalidRequest->throw(
-                description => q{'client_id' not found},
-            );
+        # If Authorization Header is set, it is decoded and overwrite form encoded parameters.
+        my $parser = OAuth::Lite2::ParamMethod::AuthHeader->new;
+        my $header_credentials = $parser->basic_credentials($request);
 
-        my $client_secret = $request->param("client_secret")
-            or OAuth::Lite2::Server::Error::InvalidRequest->throw(
-                description => q{'client_secret' not found},
-            );
+        my $client_id = ($header_credentials->{client_id}) ? $header_credentials->{client_id} : $request->param("client_id");
+        OAuth::Lite2::Server::Error::InvalidRequest->throw(
+            description => q{'client_id' not found},
+        )unless($client_id);
+
+        my $client_secret = ($header_credentials->{client_secret}) ? $header_credentials->{client_secret} : $request->param("client_secret");
+        OAuth::Lite2::Server::Error::InvalidRequest->throw(
+            description => q{'client_secret' not found},
+        )unless($client_secret);
 
         $data_handler->validate_client($client_id, $client_secret, $type)
             or OAuth::Lite2::Server::Error::InvalidClient->throw;
 
+        $handler->{client_id} = $client_id;
+        $handler->{client_secret} = $client_secret;
         my $result = $handler->handle_request($data_handler);
 
         return $request->new_response(200,
