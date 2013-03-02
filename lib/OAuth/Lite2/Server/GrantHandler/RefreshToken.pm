@@ -5,6 +5,7 @@ use warnings;
 
 use parent 'OAuth::Lite2::Server::GrantHandler';
 use OAuth::Lite2::Server::Error;
+use OAuth::Lite2::ParamMethod::AuthHeader;
 use Carp ();
 
 sub handle_request {
@@ -12,8 +13,10 @@ sub handle_request {
 
     my $req = $dh->request;
 
-    my $client_id     = $req->param("client_id");
-    my $client_secret = $req->param("client_secret");
+    my $parser = OAuth::Lite2::ParamMethod::AuthHeader->new;
+    my $header_credentials = $parser->basic_credentials($req);
+    my $client_id = ($header_credentials->{client_id}) ? $header_credentials->{client_id} : $req->param("client_id");
+    my $client_secret = ($header_credentials->{client_secret}) ? $header_credentials->{client_secret} : $req->param("client_secret");
 
     my $refresh_token = $req->param("refresh_token")
         or OAuth::Lite2::Server::Error::InvalidRequest->throw(

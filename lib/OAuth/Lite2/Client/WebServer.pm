@@ -13,6 +13,7 @@ use LWP::UserAgent;
 use HTTP::Request;
 use HTTP::Headers;
 use Try::Tiny;
+use MIME::Base64 qw(encode_base64);
 
 use OAuth::Lite2;
 use OAuth::Lite2::Util qw(build_content);
@@ -243,9 +244,10 @@ sub get_access_token {
     my $self = shift;
 
     my %args = Params::Validate::validate(@_, {
-        code         => 1,
-        redirect_uri => 1,
-        uri          => { optional => 1 },
+        code            => 1,
+        redirect_uri    => 1,
+        uri             => { optional => 1 },
+        use_basic_schema    => { optional => 1 },
         # secret_type => { optional => 1 },
         # format      => { optional => 1 },
     });
@@ -259,12 +261,15 @@ sub get_access_token {
 
     my %params = (
         grant_type    => 'authorization_code',
-        client_id     => $self->{id},
-        client_secret => $self->{secret},
         code          => $args{code},
         redirect_uri  => $args{redirect_uri},
         # format      => $args{format},
     );
+
+    unless ($args{use_basic_schema}){
+        $params{client_id}      = $self->{id};
+        $params{client_secret}  = $self->{secret};
+    }
 
     # $params{secret_type} = $args{secret_type}
     #    if $args{secret_type};
@@ -273,6 +278,8 @@ sub get_access_token {
     my $headers = HTTP::Headers->new;
     $headers->header("Content-Type" => q{application/x-www-form-urlencoded});
     $headers->header("Content-Length" => bytes::length($content));
+    $headers->header("Authorization" => sprintf(q{Basic %s}, encode_base64($self->{id}.":".$self->{secret},''))) 
+        if($args{use_basic_schema});
     my $req = HTTP::Request->new( POST => $args{uri}, $headers, $content );
 
     my $res = $self->{agent}->request($req);
@@ -309,6 +316,7 @@ sub refresh_access_token {
         # secret_type => { optional => 1 },
         # format      => { optional => 1 },
         uri           => { optional => 1 },
+        use_basic_schema    => { optional => 1 },
     });
 
     unless (exists $args{uri}) {
@@ -320,11 +328,14 @@ sub refresh_access_token {
 
     my %params = (
         grant_type    => 'refresh_token',
-        client_id     => $self->{id},
-        client_secret => $self->{secret},
         refresh_token => $args{refresh_token},
         # format      => $args{format},
     );
+
+    unless ($args{use_basic_schema}){
+        $params{client_id}      = $self->{id};
+        $params{client_secret}  = $self->{secret};
+    }
 
     # $params{secret_type} = $args{secret_type}
     #   if $args{secret_type};
@@ -333,6 +344,8 @@ sub refresh_access_token {
     my $headers = HTTP::Headers->new;
     $headers->header("Content-Type" => q{application/x-www-form-urlencoded});
     $headers->header("Content-Length" => bytes::length($content));
+    $headers->header("Authorization" => sprintf(q{Basic %s}, encode_base64($self->{id}.":".$self->{secret},''))) 
+        if($args{use_basic_schema});
     my $req = HTTP::Request->new( POST => $args{uri}, $headers, $content );
 
     my $res = $self->{agent}->request($req);

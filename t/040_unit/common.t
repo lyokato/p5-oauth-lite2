@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use Test::More tests => 8;
+use Test::More tests => 16;
 
 use TestDataHandler;
 use OAuth::Lite2::Server::Endpoint::Token;
@@ -47,6 +47,13 @@ $res = $invalid_client1->get_access_token(
 );
 ok(!$res, q{response should be undef});
 is($invalid_client1->errstr, q{unsupported_grant_type}, q{tried to use unsupported grant-type});
+$res = $invalid_client1->get_access_token(
+    username => q{buz},
+    password => q{hoge},
+    use_basic_schema => 1,
+);
+ok(!$res, q{response should be undef});
+is($invalid_client1->errstr, q{unsupported_grant_type}, q{tried to use unsupported grant-type});
 
 my $invalid_client2 = OAuth::Lite2::Client::WebServer->new(
     id                => q{invalid},
@@ -61,6 +68,13 @@ $res = $invalid_client2->get_access_token(
 );
 ok(!$res, q{response should be undef});
 is($invalid_client2->errstr, q{invalid_client}, q{invalid client_id});
+$res = $invalid_client2->get_access_token(
+    code         => q{buz},
+    redirect_uri => q{http://example.org/callback},
+    use_basic_schema => 1,
+);
+ok(!$res, q{response should be undef});
+is($invalid_client2->errstr, q{invalid_client}, q{invalid client_id});
 
 my $invalid_client3 = OAuth::Lite2::Client::WebServer->new(
     id                => q{foo},
@@ -72,6 +86,13 @@ my $invalid_client3 = OAuth::Lite2::Client::WebServer->new(
 $res = $invalid_client3->get_access_token(
     code         => q{buz},
     redirect_uri => q{http://example.org/callback},
+);
+ok(!$res, q{response should be undef});
+is($invalid_client3->errstr, q{invalid_client}, q{invalid client_secret});
+$res = $invalid_client3->get_access_token(
+    code                => q{buz},
+    redirect_uri        => q{http://example.org/callback},
+    use_basic_schema    => 1,
 );
 ok(!$res, q{response should be undef});
 is($invalid_client3->errstr, q{invalid_client}, q{invalid client_secret});
@@ -90,5 +111,11 @@ $res = $invalid_client4->get_access_token(
 );
 ok(!$res, q{response should be undef});
 is($invalid_client4->errstr, q{invalid_client}, q{This client isn't allowed to use this grant-type});
-
+$res = $invalid_client4->get_access_token(
+    code         => q{buz},
+    redirect_uri => q{http://example.org/callback},
+    use_basic_schema => 1,
+);
+ok(!$res, q{response should be undef});
+is($invalid_client4->errstr, q{invalid_client}, q{This client isn't allowed to use this grant-type});
 

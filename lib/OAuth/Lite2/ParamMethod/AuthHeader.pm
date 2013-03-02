@@ -11,6 +11,7 @@ use URI;
 use bytes ();
 use Params::Validate;
 use Hash::MultiValue;
+use MIME::Base64 qw(decode_base64);
 
 =head1 NAME
 
@@ -68,7 +69,9 @@ sub parse {
     $header =~ s/^\s*(OAuth|Bearer)\s+([^\s\,]*)//;
     my $token = $2;
     my $params = Hash::MultiValue->new;
-    if ($header && $token) {
+    $header =~ s/^\s*(OAuth|Bearer)\s*([^\s\,]*)//;
+
+    if ($header) {
         $header =~ s/^\s*\,\s*//;
         for my $attr (split /,\s*/, $header) {
             my ($key, $val) = split /=/, $attr, 2;
@@ -164,6 +167,45 @@ sub is_legacy {
     my $header = $req->header("Authorization");
     return ($header && $header =~ /^\s*OAuth(.*)$/);
 }
+
+=head2 basic_clientcredentials( $plack_request )
+
+Returns Hash reference if passed L<Plack::Request> object has client credentials in Authorization header.
+
+    my $basic_clientcredentials = $meth->basic_credentials( $plack_request );
+    if( defined($basic_clientcredentials) ){
+        my $client_id =     $basic_clientcredentials->{client_id};
+        my $client_secret = $basic_clientcredentials->{client_secret};
+    }
+
+=cut
+
+sub basic_credentials{
+    my ($self, $req) = @_;
+
+    my %credentials = (
+        client_id       => '',
+        client_secret   => ''
+    );
+    my $header = $req->header("Authorization");
+    return \%credentials unless (defined($header));
+
+    $header =~ /^\s*(Basic)(.*)$/;
+    my $decoded;
+    if($header){
+        $decoded = decode_base64($2);
+        return \%credentials unless (index($decoded,':') > 0);
+
+        my @split_credentials = split(/:/, $decoded);
+        return \%credentials unless (scalar(@split_credentials) == 2);
+
+        %credentials = (
+            client_id       => $split_credentials[0],
+            client_secret   => $split_credentials[1]
+        );
+    }
+    return \%credentials;
+};
 
 =head1 SEE ALSO
 
