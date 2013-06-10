@@ -160,7 +160,10 @@ TEST_AUTH_HEADER: {
             buz => 'hoge',
         },
     );
-    is($req->uri, q{http://example.org/resource?buz=hoge&foo=bar});
+    SKIP: {
+        skip "It fails because of perl 5.18.x Hash Randomization", 1 if $^V =~ /^v5\.18/;
+        is($req->uri, q{http://example.org/resource?buz=hoge&foo=bar});
+    }
     is($req->header("Authorization"), q{Bearer access_token_value});
     is(uc $req->method, q{GET});
     ok(!$req->content);
@@ -193,7 +196,10 @@ TEST_AUTH_HEADER: {
             buz => 'hoge',
         },
     );
-    is($req->uri, q{http://example.org/resource?buz=hoge&foo=bar});
+    SKIP: {
+        skip "It fails because of perl 5.18.x Hash Randomization", 1 if $^V =~ /^v5\.18/;
+        is($req->uri, q{http://example.org/resource?buz=hoge&foo=bar});
+    }
     is($req->header("Authorization"), q{Bearer access_token_value});
     is(uc $req->method, q{GET});
     ok(!$req->content);
