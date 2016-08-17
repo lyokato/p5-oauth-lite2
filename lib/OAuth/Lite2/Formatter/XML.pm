@@ -15,7 +15,7 @@ sub format {
     my ($self, $hash) = @_;
     my $xml = '<?xml version="1.0" encoding="UTF-8"?>';
     $xml .= '<OAuth>';
-    for my $key ( keys %$hash ) {
+    for my $key ( sort keys %$hash ) {
         $xml .= sprintf(q{<%s>%s</%s>},
             $key,
             $hash->{$key},

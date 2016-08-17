@@ -62,7 +62,7 @@ TEST_JSON: {
 TEST_XML: {
     is($xml->name, "xml");
     is($xml->type, "application/xml");
-    is($xml->format($params1), '<?xml version="1.0" encoding="UTF-8"?><OAuth><expires_in>3600</expires_in><refresh_token>bar</refresh_token><access_token_secret>buz</access_token_secret><access_token>foo</access_token></OAuth>');
+    is($xml->format($params1), '<?xml version="1.0" encoding="UTF-8"?><OAuth><access_token>foo</access_token><access_token_secret>buz</access_token_secret><expires_in>3600</expires_in><refresh_token>bar</refresh_token></OAuth>');
 
     my $parsed = $xml->parse('<?xml version="1.0" encoding="UTF-8"?><OAuth><expires_in>3600</expires_in><refresh_token>bar</refresh_token><access_token_secret>buz</access_token_secret><access_token>foo</access_token></OAuth>');
 
