@@ -76,7 +76,7 @@ sub build_content {
     $params = $params->as_hashref_mixed
         if blessed($params) && $params->isa('Hash::MultiValue');
     my @pairs;
-    for my $key (keys %$params) {
+    for my $key (sort keys %$params) {
         my $k = encode_param($key);
         my $v = $params->{$key};
         if (ref($v) eq 'ARRAY') {

@@ -114,7 +114,7 @@ sub build_request {
     my @pairs = sort map { sprintf q{%s="%s"},
         encode_param($_),
         encode_param($oauth_params->{$_})
-    } keys %$oauth_params;
+    } sort keys %$oauth_params;
 
     my $params  = $args{params} || {};
     my $method  = uc $args{method};

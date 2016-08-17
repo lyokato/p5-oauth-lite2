@@ -43,7 +43,7 @@ sub handle_request {
         token_type => 'Bearer',
         access_token => $access_token->token,
     };
-    $res->{expires_in} = $access_token->expires_in
+    $res->{expires_in} = int($access_token->expires_in)
         if $access_token->expires_in;
     $res->{refresh_token} = $auth_info->refresh_token
         if $auth_info->refresh_token;
